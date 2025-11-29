@@ -1,683 +1,446 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <title>เกมคำนวณแคลอรี่ & การออกกำลังกาย</title>
+  <meta charset="utf-8" />
+  <title>เครื่องมือออกแบบแนวทางเสริมสร้างสุขภาพของนักเรียน</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: "Sarabun", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    :root{
+      --bg:#f3f6fb; --card:#fff; --accent:#1f3b70; --muted:#64748b;
     }
-
-    body {
-      margin: 0;
-      padding: 0;
-      background: #f3f6fb;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-    }
-
-    .container {
-      max-width: 1100px;
-      width: 100%;
-      margin: 24px;
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 24px 28px 32px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-    }
-
-    h1 {
-      margin-top: 0;
-      font-size: 26px;
-      text-align: center;
-      color: #1f3b70;
-    }
-
-    h2 {
-      font-size: 20px;
-      margin-bottom: 8px;
-      color: #1f3b70;
-    }
-
-    p {
-      margin: 4px 0 8px;
-      font-size: 14px;
-      color: #444;
-    }
-
-    .flex {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .card {
-      background: #f9fbff;
-      border-radius: 12px;
-      padding: 16px 18px;
-      flex: 1 1 320px;
-      min-width: 260px;
-      border: 1px solid #e2e8f0;
-    }
-
-    label {
-      font-size: 14px;
-      font-weight: 600;
-      color: #1e293b;
-      display: block;
-      margin-bottom: 6px;
-    }
-
-    select, input[type="number"] {
-      width: 100%;
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #cbd5e1;
-      font-size: 14px;
-      outline: none;
-    }
-
-    select:focus, input[type="number"]:focus {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
-    }
-
-    button {
-      border: none;
-      border-radius: 999px;
-      padding: 8px 16px;
-      font-size: 14px;
-      cursor: pointer;
-      background: #2563eb;
-      color: #ffffff;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      margin-top: 8px;
-    }
-
-    button.secondary {
-      background: #64748b;
-    }
-
-    button.small {
-      padding: 6px 12px;
-      font-size: 13px;
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      background: #e0edff;
-      color: #1d4ed8;
-      margin-right: 4px;
-    }
-
-    .age-info {
-      font-size: 13px;
-      margin-top: 6px;
-      color: #475569;
-    }
-
-    .tabs {
-      display: flex;
-      margin-top: 16px;
-      margin-bottom: 8px;
-      border-radius: 999px;
-      background: #e2e8f0;
-      padding: 4px;
-    }
-
-    .tab {
-      flex: 1;
-      text-align: center;
-      padding: 8px 10px;
-      font-size: 14px;
-      cursor: pointer;
-      border-radius: 999px;
-      transition: background 0.2s, color 0.2s;
-      user-select: none;
-    }
-
-    .tab.active {
-      background: #ffffff;
-      color: #1d4ed8;
-      font-weight: 600;
-      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.15);
-    }
-
-    .tab-content {
-      margin-top: 12px;
-    }
-
-    .question-box {
-      margin-top: 8px;
-      padding: 12px;
-      border-radius: 12px;
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-    }
-
-    .question-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #0f172a;
-    }
-
-    .question-sub {
-      font-size: 13px;
-      color: #64748b;
-      margin-bottom: 8px;
-    }
-
-    .status-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      color: #475569;
-      margin-top: 8px;
-    }
-
-    .result {
-      margin-top: 8px;
-      padding: 8px 10px;
-      border-radius: 8px;
-      font-size: 13px;
-      background: #eff6ff;
-      color: #1d4ed8;
-    }
-
-    .result.error {
-      background: #fef2f2;
-      color: #b91c1c;
-    }
-
-    .summary {
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 10px;
-      background: #f1f5f9;
-      font-size: 13px;
-      color: #0f172a;
-    }
-
-    .summary strong {
-      color: #1d4ed8;
-    }
-
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    .pill {
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      background: #e5e7eb;
-      color: #374151;
-    }
-
-    .hint {
-      font-size: 12px;
-      color: #6b7280;
-      margin-top: 4px;
-    }
-
-    .disclaimer {
-      margin-top: 16px;
-      font-size: 11px;
-      color: #6b7280;
-      border-top: 1px dashed #cbd5e1;
-      padding-top: 8px;
-    }
-
-    @media (max-width: 768px) {
-      .container {
-        margin: 12px;
-        padding: 20px;
-      }
-    }
+    *{box-sizing:border-box;font-family:"Sarabun",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    body{margin:0;background:var(--bg);padding:20px;display:flex;justify-content:center}
+    .container{width:100%;max-width:1150px;background:var(--card);border-radius:12px;padding:20px;box-shadow:0 10px 30px rgba(0,0,0,0.08)}
+    h1{margin:0 0 8px;color:var(--accent);font-size:22px}
+    p.lead{margin:0 0 12px;color:var(--muted);font-size:13px}
+    .flex{display:flex;gap:16px;flex-wrap:wrap}
+    .card{background:#f9fbff;border-radius:10px;padding:14px;border:1px solid #e6eefb;flex:1;min-width:280px}
+    label{font-size:13px;font-weight:600;color:#0f172a;display:block;margin-bottom:6px}
+    select,input,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #cbd5e1;font-size:14px}
+    textarea{min-height:80px;resize:vertical}
+    button{background:#2563eb;color:#fff;border:0;padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:600}
+    .small{padding:6px 10px;font-size:13px;border-radius:8px}
+    .pill{display:inline-block;background:#eef2ff;color:#1d4ed8;padding:6px 10px;border-radius:999px;font-size:13px;margin-right:6px}
+    .list{margin:8px 0 0;padding:0;list-style:none}
+    .list li{background:#fff;padding:10px;border-radius:8px;margin-bottom:8px;border:1px solid #e6eefb;display:flex;justify-content:space-between;gap:8px;align-items:center}
+    .muted{color:var(--muted);font-size:13px}
+    .meta{font-size:12px;color:#475569}
+    .template{background:#fff;padding:10px;border-radius:8px;border:1px dashed #e6eefb;margin-top:8px}
+    .tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .danger{background:#ef4444}
+    .success{background:#10b981}
+    .hide{display:none}
+    .summary{background:#f1f5f9;padding:10px;border-radius:8px;margin-top:10px;color:#0f172a}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media(max-width:880px){.grid{grid-template-columns:1fr}}
+    .right-col{min-width:320px;max-width:420px}
+    .badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#e0edff;color:#1d4ed8;font-size:12px}
+    .action-row{display:flex;gap:8px}
   </style>
 </head>
 <body>
-<div class="container">
-  <h1>🎮 เกมคำนวณแคลอรี่ & การออกกำลังกายในชีวิตประจำวัน</h1>
-  <p style="text-align:center;font-size:13px;color:#64748b;">
-    เลือกช่วงอายุ → เล่นเกมทายแคลอรี่อาหาร → ดูว่าจะเผาผลาญด้วยการออกกำลังกายส่วนไหนของร่างกายได้บ้าง
-  </p>
+  <div class="container">
+    <h1>🧭 เครื่องมือออกแบบแนวทางเสริมสร้างสุขภาพของนักเรียน</h1>
+    <p class="lead">สร้างแผนกิจกรรมสุขภาพที่เหมาะกับช่วงอายุ/ระดับชั้น — รวมกิจกรรมทางกาย โภชนาการ สุขภาพจิต และการติดตามผล แบบใช้งานได้จริงสำหรับครูและผู้บริหาร</p>
 
-  <!-- ส่วนเลือกช่วงอายุ -->
-  <div class="card" style="margin-bottom:12px;">
-    <h2>1️⃣ เลือกช่วงอายุ</h2>
-    <label for="ageGroup">ช่วงอายุของผู้เล่น</label>
-    <select id="ageGroup">
-      <option value="teen">13–18 ปี (วัยรุ่น)</option>
-      <option value="adult">19–59 ปี (ผู้ใหญ่)</option>
-      <option value="child">7–12 ปี (เด็ก)</option>
-      <option value="senior">60 ปีขึ้นไป (ผู้สูงอายุ)</option>
-    </select>
-    <div id="ageInfo" class="age-info"></div>
-  </div>
-
-  <!-- แท็บเลือกโหมดเกม -->
-  <div class="tabs">
-    <div class="tab active" data-tab="food">โหมดที่ 1: เกมทายแคลอรี่อาหาร</div>
-    <div class="tab" data-tab="exercise">โหมดที่ 2: เกมเลือกการออกกำลังกาย</div>
-  </div>
-
-  <div class="tab-content">
-    <div id="tab-food">
-      <div class="flex">
-        <!-- การเล่นเกมอาหาร -->
+    <div class="grid">
+      <!-- LEFT: settings & library -->
+      <div>
         <div class="card">
-          <h2>2️⃣ เกมทายแคลอรี่</h2>
-          <p>ระบบจะสุ่มอาหาร/เครื่องดื่มมาให้ 1 อย่าง ให้ลองเดาว่ามีแคลอรี่ประมาณเท่าไร (ต่อ 1 หน่วยที่ระบุ)</p>
+          <h2 style="margin:0 0 8px">1) ข้อมูลพื้นฐาน / เลือกกลุ่มเป้าหมาย</h2>
+          <label for="ageGroup">ช่วงอายุ / ระดับชั้น</label>
+          <select id="ageGroup">
+            <option value="primary">ป.1–ป.6 (ประถมศึกษา)</option>
+            <option value="lower-sec">ม.1–ม.3 (มัธยมต้น)</option>
+            <option value="upper-sec">ม.4–ม.6 (มัธยมปลาย)</option>
+            <option value="voc">อาชีวะ / นักศึกษา</option>
+          </select>
+          <div style="margin-top:8px" id="groupInfo" class="muted"></div>
+        </div>
 
-          <button id="btnNewQuestion">เริ่มคำถามใหม่ / เปลี่ยนเมนู</button>
+        <div class="card" style="margin-top:12px">
+          <h2 style="margin:0 0 8px">2) ไลบรารีกิจกรรม (ตัวอย่าง)</h2>
+          <p class="muted">ลากความคิดจากรายการตัวอย่าง หรือกดเพิ่มแล้วปรับเป็นของคุณ</p>
 
-          <div id="foodQuestionBox" class="question-box" style="display:none;">
-            <div class="badge" id="foodIndexBadge">คำถามข้อ 1/5</div>
-            <div class="question-title" id="foodName">ชื่ออาหาร</div>
-            <div class="question-sub">ลองเดาแคลอรี่ (กิโลแคลอรี่) ของเมนูนี้</div>
-
-            <label for="calInput">กรอกแคลอรี่ที่คุณเดา</label>
-            <input type="number" id="calInput" placeholder="เช่น 250" min="0">
-            <button id="btnCheckFood" class="small">ตรวจคำตอบ</button>
-
-            <div class="hint">💡 เฉลยจะถือว่าถูก ถ้าเดาอยู่ในช่วง ±50 kcal จากค่าจริง</div>
-
-            <div id="foodResult" class="result" style="display:none;"></div>
-
-            <div class="status-row">
-              <span>คะแนนสะสม: <strong id="scoreText">0</strong> คะแนน</span>
-              <span>แคลอรี่ที่กินจากเกมนี้: <strong id="totalEaten">0</strong> kcal</span>
-            </div>
+          <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <span class="pill">โภชนาการ: เวิร์กช็อปอ่านฉลาก</span>
+            <span class="pill">กาย: เดินเร็ว 20 นาที</span>
+            <span class="pill">จิตใจ: เทคนิคหายใจ 5-5-5</span>
+            <span class="pill">ทักษะชีวิต: วางแผนมื้ออาหาร</span>
           </div>
 
-          <div id="foodSummary" class="summary" style="display:none;"></div>
-        </div>
-
-        <!-- ข้อมูลตัวอย่างเมนู -->
-        <div class="card">
-          <h2>🍚 ตัวอย่างเมนูในเกม</h2>
-          <p>ใช้ตัวอย่างอาหาร/เครื่องดื่มในชีวิตประจำวันของคนไทย</p>
-          <div class="pill-row" id="foodListPreview"></div>
-          <p class="hint">
-            * ตัวเลขแคลอรี่เป็นค่าใกล้เคียง ใช้เพื่อการเรียนรู้ ไม่ใช่คำแนะนำทางการแพทย์
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div id="tab-exercise" style="display:none;">
-      <div class="flex">
-        <!-- เลือกส่วนของร่างกาย -->
-        <div class="card">
-          <h2>3️⃣ เลือกส่วนของร่างกาย & ท่าบริหาร</h2>
-          <label for="bodyPart">เลือกส่วนของร่างกายที่อยากเน้นออกกำลังกาย</label>
-          <select id="bodyPart">
-            <option value="legs">ขา / หัวใจและปอด</option>
-            <option value="arms">แขน / ไหล่</option>
-            <option value="core">ลำตัว / หน้าท้อง</option>
-            <option value="full">ทั้งตัว</option>
+          <label for="activityCategory">ประเภทกิจกรรม</label>
+          <select id="activityCategory">
+            <option value="physical">การเคลื่อนไหว/กีฬา</option>
+            <option value="nutrition">โภชนาการ</option>
+            <option value="mental">สุขภาพจิต</option>
+            <option value="life-skill">ทักษะชีวิต</option>
+            <option value="screen">ลดเวลาใช้จอ</option>
           </select>
 
-          <label for="exerciseSelect" style="margin-top:10px;">เลือกท่าออกกำลังกาย</label>
-          <select id="exerciseSelect"></select>
+          <label for="activityName" style="margin-top:8px">ชื่อกิจกรรม (ตัวอย่าง)</label>
+          <input id="activityName" placeholder="เช่น เดินเร็ว 20 นาที / เวิร์กช็อปสอนอ่านฉลาก">
 
-          <label for="minutesInput" style="margin-top:10px;">ระยะเวลาที่ออกกำลังกาย (นาที)</label>
-          <input type="number" id="minutesInput" value="30" min="5" step="5">
+          <label for="activityDuration" style="margin-top:8px">ระยะเวลา (นาที)</label>
+          <input id="activityDuration" type="number" min="5" value="30">
 
-          <button id="btnCalcBurn">คำนวณแคลอรี่ที่เผาผลาญ</button>
+          <label for="activityObjective" style="margin-top:8px">วัตถุประสงค์ (สั้น ๆ)</label>
+          <input id="activityObjective" placeholder="เช่น เพิ่มความรู้เรื่องโภชนาการ / เพิ่มความอดทน">
 
-          <div id="exerciseResult" class="result" style="display:none;"></div>
+          <label for="activityMaterials" style="margin-top:8px">อุปกรณ์/วัสดุ</label>
+          <input id="activityMaterials" placeholder="เช่น ลูกเชือก, ใบงาน, ป้ายฉลากอาหาร">
 
-          <div class="summary" id="compareSummary" style="display:none;"></div>
+          <div class="tools">
+            <button id="btnAddActivity" class="small">เพิ่มลงไลบรารี</button>
+            <button id="btnResetLib" class="small danger">รีเซ็ทตัวอย่าง</button>
+          </div>
+
+          <ul id="activityList" class="list" style="margin-top:10px"></ul>
         </div>
 
-        <!-- ตัวอย่างท่าออกกำลังกาย -->
+        <div class="card" style="margin-top:12px">
+          <h2 style="margin:0 0 8px">3) เทมเพลตแผนการสอน / กิจกรรม</h2>
+          <p class="muted">คัดลอกไปใช้เป็นกรอบเมื่อต้องการส่งแผนให้ผู้บริหารหรือครูร่วม</p>
+          <div class="template">
+            <strong>Objective:</strong>
+            <div id="tplObjective" class="meta">[วัตถุประสงค์เช่น เพิ่มความรู้เรื่องโภชนาการ]</div>
+            <strong>Materials:</strong>
+            <div id="tplMaterials" class="meta">[อุปกรณ์ เช่น ใบงาน ป้ายฉลาก]</div>
+            <strong>Steps:</strong>
+            <div id="tplSteps" class="meta">1) นำเสนอ 10 นาที 2) กิจกรรมกลุ่ม 15 นาที 3) สรุปและประเมิน 5 นาที</div>
+            <strong>Evaluation:</strong>
+            <div id="tplEval" class="meta">แบบสอบถามก่อน/หลังหรือสังเกตพฤติกรรม</div>
+            <div style="margin-top:8px"><button id="btnCopyTemplate" class="small">คัดลอกเทมเพลต</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: planner & summary -->
+      <div class="right-col">
         <div class="card">
-          <h2>🏃‍♀️ ตัวอย่างท่าออกกำลังกายในเกม</h2>
-          <p>ใช้ค่าประมาณแคลอรี่ที่เผาผลาญได้ต่อ 1 นาที</p>
-          <ul style="font-size:13px;color:#475569;padding-left:18px;">
-            <li>เดินเร็ว (ขา): ~4 kcal/นาที</li>
-            <li>วิ่งเบา (ขา): ~8 kcal/นาที</li>
-            <li>ปั่นจักรยาน (ทั้งตัว): ~7 kcal/นาที</li>
-            <li>กระโดดเชือก (ทั้งตัว): ~10 kcal/นาที</li>
-            <li>วิดพื้น (แขน/หน้าอก): ~6 kcal/นาที</li>
-            <li>แพลงก์ / ซิทอัพ (หน้าท้อง): ~5 kcal/นาที</li>
-            <li>โยคะเบา ๆ (ทั้งตัว): ~3 kcal/นาที</li>
+          <h2 style="margin:0 0 8px">4) สร้างแผนกิจกรรม (แผนรายสัปดาห์/รายเดือน)</h2>
+
+          <label for="planDate">วันที่ของกิจกรรม</label>
+          <input id="planDate" type="date">
+
+          <label for="planTime" style="margin-top:8px">เวลา (เริ่ม)</label>
+          <input id="planTime" type="time">
+
+          <label for="planActivity" style="margin-top:8px">เลือกกิจกรรมจากไลบรารี</label>
+          <select id="planActivity"></select>
+
+          <label for="planTeacher" style="margin-top:8px">ผู้รับผิดชอบ / ครู</label>
+          <input id="planTeacher" placeholder="เช่น ครูพลอย">
+
+          <div class="action-row" style="margin-top:10px">
+            <button id="btnAddToPlan" class="small">เพิ่มเข้าแผน</button>
+            <button id="btnClearPlan" class="small danger">ล้างแผนทั้งหมด</button>
+          </div>
+
+          <ul id="planList" class="list" style="margin-top:10px"></ul>
+
+          <div style="margin-top:8px">
+            <button id="btnPrintPlan" class="small">พิมพ์/ดาวน์โหลดสรุปแผน</button>
+            <button id="btnExportJSON" class="small">ดาวน์โหลด JSON (แผน)</button>
+          </div>
+
+          <div class="summary" id="planSummary" style="display:none"></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h2 style="margin:0 0 8px">คำแนะนำการวัดผล & ติดตาม</h2>
+          <p class="muted">ตัวอย่างวิธีการติดตามผลที่ครูสามารถใช้ได้จริง</p>
+          <ul class="muted" style="padding-left:18px;margin:6px 0 0">
+            <li>แบบสำรวจความรู้ก่อน-หลัง (pre/post test)</li>
+            <li>บันทึกความถี่กิจกรรม (เช่น จำนวนวันออกกำลังกาย/สัปดาห์)</li>
+            <li>การสังเกตพฤติกรรม (ครูประเมินเป็น checklist)</li>
+            <li>บันทึกความรู้สึก/สุขภาพจิต (สั้น ๆ เป็นไดอารี่ 1–3 ข้อ)</li>
+            <li>สรุปเชิงปริมาณเป็นรายเดือนเพื่อเสนอผู้บริหาร</li>
           </ul>
-          <p class="hint">
-            ผู้เล่นสามารถทดลองเปลี่ยนเวลา / ท่าออกกำลังกาย เพื่อดูว่าเผาผลาญแคลอรี่ใกล้เคียงกับที่กินจากเกมโหมดที่ 1 ได้หรือไม่
-          </p>
+          <div style="margin-top:8px">
+            <button id="btnAutoSuggestions" class="small success">สร้างแผนตัวอย่างอัตโนมัติ</button>
+          </div>
         </div>
       </div>
     </div>
+
+    <div style="margin-top:12px" class="muted">
+      ⚠️ เครื่องมือนี้เป็นเครื่องมือช่วยออกแบบและให้คำแนะนำเชิงการศึกษา ไม่ใช่คำแนะนำทางการแพทย์โดยตรง หากต้องการจัดโปรแกรมเชิงคลินิกหรือสำหรับเด็กที่มีภาวะสุขภาพพิเศษ ควรปรึกษาผู้เชี่ยวชาญ
+    </div>
   </div>
 
-  <div class="disclaimer">
-    ⚠️ <strong>หมายเหตุสำคัญ:</strong> เกมนี้ใช้ตัวเลขแคลอรี่แบบประมาณการเพื่อการศึกษาและฝึกคิดวิเคราะห์เท่านั้น
-    ไม่ใช่คำแนะนำทางการแพทย์หรือโภชนาการจริง ๆ หากต้องการควบคุมน้ำหนักหรือวางแผนอาหาร
-    ควรปรึกษาแพทย์หรือผู้เชี่ยวชาญด้านโภชนาการเพิ่มเติม
-  </div>
-</div>
+  <script>
+    // ---------- ข้อมูลอ้างอิงช่วงอายุ ----------
+    const ageHints = {
+      "primary":"เน้นกิจกรรมสนุก สั้น ๆ 10-20 นาที ควบคุมอาหารที่พกมาโรงเรียน",
+      "lower-sec":"เพิ่มความเข้มข้นมากขึ้น ฝึกทักษะกลุ่มและการรู้เท่าทันสื่อ",
+      "upper-sec":"เสริมทักษะดูแลตัวเอง วางแผนมื้ออาหาร และฝึกการออกกำลังกายแบบมีเป้าหมาย",
+      "voc":"ปรับเป็นกิจกรรมที่เชื่อมโยงอาชีพ เน้นสุขภาพการทำงาน"
+    };
+    const ageGroupSelect = document.getElementById('ageGroup');
+    const groupInfo = document.getElementById('groupInfo');
+    function updateAgeInfo(){ groupInfo.textContent = ageHints[ageGroupSelect.value] || ''; }
+    ageGroupSelect.addEventListener('change',updateAgeInfo);
+    updateAgeInfo();
 
-<script>
-  // -------------------------------
-  // ข้อมูลช่วงอายุ & พลังงานที่แนะนำต่อวัน (ค่าประมาณ)
-  // -------------------------------
-  const ageGroups = {
-    child: {
-      label: "7–12 ปี (เด็ก)",
-      recommend: "ประมาณ 1,600–2,000 kcal/วัน (ขึ้นกับเพศและกิจกรรม)"
-    },
-    teen: {
-      label: "13–18 ปี (วัยรุ่น)",
-      recommend: "ประมาณ 2,000–2,400 kcal/วัน (ถ้าออกกำลังกายปานกลาง)"
-    },
-    adult: {
-      label: "19–59 ปี (ผู้ใหญ่)",
-      recommend: "ประมาณ 1,800–2,400 kcal/วัน (ขึ้นกับงานและการเคลื่อนไหว)"
-    },
-    senior: {
-      label: "60 ปีขึ้นไป (ผู้สูงอายุ)",
-      recommend: "ประมาณ 1,600–2,000 kcal/วัน (มักใช้พลังงานน้อยลง)"
+    // ---------- ไลบรารีกิจกรรม (เริ่มต้นตัวอย่าง) ----------
+    let library = [
+      { id: idGen(), category:'physical', name:'เดินเร็ว 20 นาที', duration:20, objective:'เพิ่มการออกกำลังกายต่อวัน', materials:'รองเท้ากีฬา', evaluation:'จดจำนวนก้าว/ความรู้สึก' },
+      { id: idGen(), category:'physical', name:'Circuit สลับ 6 ท่า (30 นาที)', duration:30, objective:'เพิ่มความแข็งแรงและความทนทาน', materials:'พรมออกกำลังกาย', evaluation:'count reps/ครูสังเกต' },
+      { id: idGen(), category:'nutrition', name:'เวิร์กช็อปอ่านฉลากอาหาร (45 นาที)', duration:45, objective:'รู้เท่าทันฉลากโภชนาการ', materials:'ตัวอย่างฉลาก ใบงาน', evaluation:'pre/post quiz' },
+      { id: idGen(), category:'mental', name:'ฝึกหายใจ 5-5-5 + ตระหนักรู้ (15 นาที)', duration:15, objective:'ลดความเครียดระหว่างเรียน', materials:'พื้นที่สงบ', evaluation:'แบบประเมินความเครียดสั้น' },
+      { id: idGen(), category:'life-skill', name:'วางแผนมื้ออาหารสำหรับนักเรียน', duration:40, objective:'ฝึกการวางแผนโภชนาการ', materials:'ใบงาน ปากกา', evaluation:'งานเสนอแผน' },
+      { id: idGen(), category:'screen', name:'ชาเลนจ์ลดเวลาใช้จอ 1 สัปดาห์', duration:7*24*60, objective:'ลดเวลาใช้จอ', materials:'บันทึกกิจกรรม', evaluation:'บันทึกและสรุป' }
+    ];
+
+    // ---------- DOM อ้างอิง ----------
+    const activityList = document.getElementById('activityList');
+    const activityCategory = document.getElementById('activityCategory');
+    const activityName = document.getElementById('activityName');
+    const activityDuration = document.getElementById('activityDuration');
+    const activityObjective = document.getElementById('activityObjective');
+    const activityMaterials = document.getElementById('activityMaterials');
+    const btnAddActivity = document.getElementById('btnAddActivity');
+    const btnResetLib = document.getElementById('btnResetLib');
+    const planActivity = document.getElementById('planActivity');
+
+    // ---------- Planner ----------
+    const planDate = document.getElementById('planDate');
+    const planTime = document.getElementById('planTime');
+    const planTeacher = document.getElementById('planTeacher');
+    const btnAddToPlan = document.getElementById('btnAddToPlan');
+    const planList = document.getElementById('planList');
+    const planSummary = document.getElementById('planSummary');
+    const btnPrintPlan = document.getElementById('btnPrintPlan');
+    const btnExportJSON = document.getElementById('btnExportJSON');
+    const btnCopyTemplate = document.getElementById('btnCopyTemplate');
+    const tplObjective = document.getElementById('tplObjective');
+    const tplMaterials = document.getElementById('tplMaterials');
+    const tplSteps = document.getElementById('tplSteps');
+    const tplEval = document.getElementById('tplEval');
+    const btnAutoSuggestions = document.getElementById('btnAutoSuggestions');
+    const btnClearPlan = document.getElementById('btnClearPlan');
+
+    // ---------- Utility ----------
+    function idGen(){ return 'id_'+Math.random().toString(36).slice(2,9); }
+
+    // ---------- Render library ----------
+    function renderLibrary(){
+      activityList.innerHTML = '';
+      library.forEach(item=>{
+        const li = document.createElement('li');
+        li.innerHTML = `<div style="flex:1">
+          <div style="font-weight:600">${item.name}</div>
+          <div class="meta">${item.category} • ${item.duration} นาที • ${item.objective}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="small" data-id="${item.id}" onclick="addToPlanFromLib(event)">ใช้ในแผน</button>
+          <button class="small" data-id="${item.id}" onclick="removeFromLib(event)" style="background:#ef4444">ลบ</button>
+        </div>`;
+        activityList.appendChild(li);
+      });
+      // update planActivity select
+      renderPlanActivityOptions();
     }
-  };
 
-  // -------------------------------
-  // ข้อมูลอาหารตัวอย่าง (ค่าประมาณต่อ 1 หน่วยที่ระบุ)
-  // -------------------------------
-  const foods = [
-    { name: "ข้าวมันไก่ 1 จาน", calories: 600 },
-    { name: "ข้าวผัดกะเพราไก่ + ไข่ดาว 1 จาน", calories: 650 },
-    { name: "ส้มตำไทย 1 จาน", calories: 120 },
-    { name: "ขนมครก 2 ชิ้น", calories: 200 },
-    { name: "ไก่ปิ้ง 1 ไม้", calories: 100 },
-    { name: "ข้าวสวย 1 ทัพพี", calories: 80 },
-    { name: "ชานมไข่มุก 1 แก้ว (500 ml)", calories: 300 },
-    { name: "โค้กกระป๋อง 1 กระป๋อง (330 ml)", calories: 140 },
-    { name: "น้ำส้ม 1 แก้ว (250 ml)", calories: 110 },
-    { name: "นมจืด UHT 1 กล่อง (250 ml)", calories: 130 }
-  ];
+    // เพิ่มกิจกรรมใหม่เข้าไลบรารี
+    btnAddActivity.addEventListener('click',()=>{
+      const name = activityName.value.trim();
+      if(!name){ alert('กรุณาใส่ชื่อกิจกรรม'); return; }
+      const item = {
+        id: idGen(),
+        category: activityCategory.value,
+        name,
+        duration: Number(activityDuration.value)||30,
+        objective: activityObjective.value||'',
+        materials: activityMaterials.value||'',
+        evaluation: 'แบบประเมิน/สังเกต'
+      };
+      library.unshift(item);
+      activityName.value=''; activityObjective.value=''; activityMaterials.value=''; activityDuration.value=30;
+      renderLibrary();
+    });
 
-  // -------------------------------
-  // ข้อมูลท่าออกกำลังกาย (แคลอรี่ที่เผาผลาญต่อ 1 นาที)
-  // -------------------------------
-  const exercises = [
-    { part: "legs",  name: "เดินเร็ว",             burnPerMin: 4 },
-    { part: "legs",  name: "วิ่งเหยาะ ๆ",          burnPerMin: 8 },
-    { part: "legs",  name: "วิ่งสลับเดิน (อินเตอร์วอล)", burnPerMin: 7 },
+    // รีเซ็ทไลบรารีเป็นค่าเริ่มต้น
+    btnResetLib.addEventListener('click',()=>{
+      if(!confirm('ต้องการรีเซ็ทไลบรารีตัวอย่างหรือไม่? จะลบรายการที่เพิ่มทั้งหมด')) return;
+      // simple reset by reloading page state (or reassign default)
+      location.reload();
+    });
 
-    { part: "arms",  name: "วิดพื้น",              burnPerMin: 6 },
-    { part: "arms",  name: "ดัมเบลเบา ๆ",         burnPerMin: 5 },
-    { part: "arms",  name: "แพลงก์ท่าดันแขน",     burnPerMin: 6 },
+    window.removeFromLib = function(ev){
+      const id = ev.currentTarget.dataset.id;
+      library = library.filter(i=>i.id!==id);
+      renderLibrary();
+    };
 
-    { part: "core",  name: "ซิทอัพ",              burnPerMin: 5 },
-    { part: "core",  name: "แพลงก์",              burnPerMin: 5 },
-    { part: "core",  name: "ครันช์หน้าท้อง",      burnPerMin: 5 },
+    // ---------- Planner data ----------
+    let plan = []; // array of {id, activityId, date, time, teacher}
 
-    { part: "full",  name: "ปั่นจักรยาน",         burnPerMin: 7 },
-    { part: "full",  name: "กระโดดเชือก",         burnPerMin: 10 },
-    { part: "full",  name: "โยคะเบา ๆ",           burnPerMin: 3 }
-  ];
+    function renderPlanActivityOptions(){
+      planActivity.innerHTML = '';
+      library.forEach(it=>{
+        const opt = document.createElement('option');
+        opt.value = it.id;
+        opt.textContent = `${it.name} (${it.duration} นาที)`;
+        planActivity.appendChild(opt);
+      });
+    }
 
-  // ตัวแปรสเตทของเกมอาหาร
-  let currentFood = null;
-  let questionIndex = 0;
-  const maxQuestions = 5;
-  let score = 0;
-  let totalEatenCalories = 0;
-  let gameFinished = false;
+    // add to plan (from planner form)
+    btnAddToPlan.addEventListener('click',()=>{
+      const aid = planActivity.value;
+      if(!aid){ alert('เลือกกิจกรรมก่อน'); return; }
+      const date = planDate.value;
+      const time = planTime.value || '09:00';
+      const teacher = planTeacher.value || 'ไม่ระบุ';
+      const act = library.find(l=>l.id===aid);
+      const entry = { id: idGen(), activityId:aid, name:act.name, date, time, teacher, duration:act.duration, category:act.category };
+      plan.push(entry);
+      renderPlan();
+    });
 
-  // อ้างอิง element ต่าง ๆ
-  const ageGroupSelect = document.getElementById("ageGroup");
-  const ageInfoDiv = document.getElementById("ageInfo");
+    // add to plan directly from lib button
+    window.addToPlanFromLib = function(e){
+      const id = e.currentTarget.dataset.id;
+      const act = library.find(l=>l.id===id);
+      const date = planDate.value || new Date().toISOString().slice(0,10);
+      const time = planTime.value || '10:00';
+      plan.push({ id:idGen(), activityId: id, name: act.name, date, time, teacher: planTeacher.value||'ไม่ระบุ', duration:act.duration, category:act.category });
+      renderPlan();
+    };
 
-  const tabs = document.querySelectorAll(".tab");
-  const tabFood = document.getElementById("tab-food");
-  const tabExercise = document.getElementById("tab-exercise");
-
-  const btnNewQuestion = document.getElementById("btnNewQuestion");
-  const foodQuestionBox = document.getElementById("foodQuestionBox");
-  const foodNameDiv = document.getElementById("foodName");
-  const foodIndexBadge = document.getElementById("foodIndexBadge");
-  const calInput = document.getElementById("calInput");
-  const btnCheckFood = document.getElementById("btnCheckFood");
-  const foodResult = document.getElementById("foodResult");
-  const scoreText = document.getElementById("scoreText");
-  const totalEaten = document.getElementById("totalEaten");
-  const foodSummary = document.getElementById("foodSummary");
-  const foodListPreview = document.getElementById("foodListPreview");
-
-  const bodyPartSelect = document.getElementById("bodyPart");
-  const exerciseSelect = document.getElementById("exerciseSelect");
-  const minutesInput = document.getElementById("minutesInput");
-  const btnCalcBurn = document.getElementById("btnCalcBurn");
-  const exerciseResult = document.getElementById("exerciseResult");
-  const compareSummary = document.getElementById("compareSummary");
-
-  // -------------------------------
-  // แสดงข้อมูลช่วงอายุ
-  // -------------------------------
-  function updateAgeInfo() {
-    const key = ageGroupSelect.value;
-    const info = ageGroups[key];
-    ageInfoDiv.innerHTML = `<span class="badge">ช่วงอายุ: ${info.label}</span> แคลอรี่ที่ร่างกายต้องการต่อวันโดยประมาณ: <strong>${info.recommend}</strong>`;
-  }
-
-  ageGroupSelect.addEventListener("change", updateAgeInfo);
-  updateAgeInfo(); // เรียกครั้งแรก
-
-  // -------------------------------
-  // ระบบแท็บ (โหมดเกม)
-  // -------------------------------
-  tabs.forEach(tab => {
-    tab.addEventListener("click", () => {
-      tabs.forEach(t => t.classList.remove("active"));
-      tab.classList.add("active");
-
-      const tabName = tab.getAttribute("data-tab");
-      if (tabName === "food") {
-        tabFood.style.display = "block";
-        tabExercise.style.display = "none";
-      } else {
-        tabFood.style.display = "none";
-        tabExercise.style.display = "block";
+    // render plan list
+    function renderPlan(){
+      planList.innerHTML = '';
+      if(plan.length===0){
+        planList.innerHTML = '<div class="muted" style="padding:8px">ยังไม่มีรายการแผน</div>';
+        planSummary.style.display='none';
+        return;
       }
-    });
-  });
-
-  // -------------------------------
-  // แสดงรายการตัวอย่างเมนูทางขวา
-  // -------------------------------
-  function renderFoodPreview() {
-    foodListPreview.innerHTML = "";
-    foods.forEach(f => {
-      const pill = document.createElement("div");
-      pill.className = "pill";
-      pill.textContent = `${f.name} ~ ${f.calories} kcal`;
-      foodListPreview.appendChild(pill);
-    });
-  }
-  renderFoodPreview();
-
-  // -------------------------------
-  // เกมอาหาร: สุ่มคำถามใหม่
-  // -------------------------------
-  function newFoodQuestion() {
-    if (gameFinished) {
-      // ถ้าเคลียร์จบไปแล้ว เริ่มเกมใหม่
-      questionIndex = 0;
-      score = 0;
-      totalEatenCalories = 0;
-      gameFinished = false;
-      foodSummary.style.display = "none";
-      scoreText.textContent = "0";
-      totalEaten.textContent = "0";
+      // sort by date+time
+      plan.sort((a,b)=>{
+        const ta = (a.date||'')+' '+(a.time||'');
+        const tb = (b.date||'')+' '+(b.time||'');
+        return ta.localeCompare(tb);
+      });
+      plan.forEach(item=>{
+        const li = document.createElement('li');
+        li.innerHTML = `<div style="flex:1">
+          <div style="font-weight:600">${item.name}</div>
+          <div class="meta">${item.date||'ไม่ระบุ'} ${item.time||''} • ${item.duration} นาที • ครู: ${item.teacher}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="small" data-id="${item.id}" onclick="editPlanItem(event)">แก้ไข</button>
+          <button class="small" data-id="${item.id}" onclick="removePlanItem(event)" style="background:#ef4444">ลบ</button>
+        </div>`;
+        planList.appendChild(li);
+      });
+      // update summary
+      renderPlanSummary();
     }
 
-    if (questionIndex >= maxQuestions) {
-      showFoodSummary();
-      return;
-    }
+    window.removePlanItem = function(e){
+      const id = e.currentTarget.dataset.id;
+      plan = plan.filter(p=>p.id!==id);
+      renderPlan();
+    };
 
-    // สุ่มเมนู
-    const randomIndex = Math.floor(Math.random() * foods.length);
-    currentFood = foods[randomIndex];
+    window.editPlanItem = function(e){
+      const id = e.currentTarget.dataset.id;
+      const item = plan.find(p=>p.id===id);
+      if(!item) return;
+      // simple inline edit using prompt (keeps code short)
+      const newDate = prompt('วันที่ (YYYY-MM-DD)', item.date||'');
+      if(newDate===null) return;
+      const newTime = prompt('เวลา (HH:MM)', item.time||'09:00');
+      if(newTime===null) return;
+      const newTeacher = prompt('ผู้รับผิดชอบ', item.teacher||'');
+      if(newTeacher===null) return;
+      item.date = newDate; item.time = newTime; item.teacher = newTeacher;
+      renderPlan();
+    };
 
-    questionIndex++;
-    foodIndexBadge.textContent = `คำถามข้อ ${questionIndex}/${maxQuestions}`;
-    foodNameDiv.textContent = currentFood.name;
-    calInput.value = "";
-    foodResult.style.display = "none";
-    foodResult.classList.remove("error");
-    foodQuestionBox.style.display = "block";
-  }
-
-  btnNewQuestion.addEventListener("click", newFoodQuestion);
-
-  // -------------------------------
-  // เกมอาหาร: ตรวจคำตอบ
-  // -------------------------------
-  btnCheckFood.addEventListener("click", () => {
-    if (!currentFood) return;
-
-    const val = parseFloat(calInput.value);
-    if (isNaN(val) || val < 0) {
-      foodResult.textContent = "กรุณากรอกตัวเลขแคลอรี่ให้ถูกต้องก่อนนะ";
-      foodResult.classList.add("error");
-      foodResult.style.display = "block";
-      return;
-    }
-
-    const diff = Math.abs(val - currentFood.calories);
-    const tolerance = 50; // ยอมให้ต่างได้ ±50 kcal
-
-    if (diff <= tolerance) {
-      score++;
-      foodResult.classList.remove("error");
-      foodResult.innerHTML =
-        `✅ ดีมาก! นับว่าตอบได้ใกล้เคียง<br>` +
-        `เมนู <strong>${currentFood.name}</strong> มีประมาณ <strong>${currentFood.calories} kcal</strong> (คำตอบของคุณ: ${val} kcal)`;
-    } else {
-      foodResult.classList.add("error");
-      foodResult.innerHTML =
-        `❌ ตอบห่างไปหน่อยนะ ลองสังเกตเมนูรอบตัวในชีวิตจริงดูอีกที<br>` +
-        `เฉลย: <strong>${currentFood.name}</strong> มีประมาณ <strong>${currentFood.calories} kcal</strong> (คำตอบของคุณ: ${val} kcal)`;
-    }
-
-    foodResult.style.display = "block";
-    totalEatenCalories += currentFood.calories;
-    scoreText.textContent = score.toString();
-    totalEaten.textContent = totalEatenCalories.toString();
-
-    if (questionIndex >= maxQuestions) {
-      gameFinished = true;
-      showFoodSummary();
-    }
-  });
-
-  // -------------------------------
-  // สรุปเกมอาหาร
-  // -------------------------------
-  function showFoodSummary() {
-    const ageKey = ageGroupSelect.value;
-    const info = ageGroups[ageKey];
-
-    foodSummary.style.display = "block";
-    foodSummary.innerHTML =
-      `<strong>สรุปโหมดเกมอาหาร</strong><br>` +
-      `คุณเล่นครบ ${maxQuestions} เมนู ได้คะแนนถูกใกล้เคียงทั้งหมด <strong>${score} ข้อ</strong><br>` +
-      `รวมแคลอรี่ที่ได้จากเมนูในเกม: <strong>${totalEatenCalories} kcal</strong><br><br>` +
-      `หากเทียบกับช่วงอายุ <strong>${info.label}</strong> ที่ต้องการพลังงานต่อวันประมาณ <strong>${info.recommend}</strong><br>` +
-      `ลองชวนผู้เล่นคิดต่อว่า ถ้าในชีวิตจริงกินคล้าย ๆ เกมในวันนี้ แล้วออกกำลังกายพอหรือไม่?`;
-  }
-
-  // -------------------------------
-  // ส่วนออกกำลังกาย: โหลดท่าตามส่วนร่างกาย
-  // -------------------------------
-  function populateExerciseOptions() {
-    const part = bodyPartSelect.value;
-    const options = exercises.filter(e => e.part === part);
-
-    exerciseSelect.innerHTML = "";
-    options.forEach(e => {
-      const opt = document.createElement("option");
-      opt.value = e.name;
-      opt.textContent = `${e.name} (~${e.burnPerMin} kcal/นาที)`;
-      exerciseSelect.appendChild(opt);
-    });
-  }
-
-  bodyPartSelect.addEventListener("change", populateExerciseOptions);
-  populateExerciseOptions(); // ครั้งแรก
-
-  // -------------------------------
-  // คำนวณแคลอรี่ที่เผาผลาญจากการออกกำลังกาย
-  // -------------------------------
-  btnCalcBurn.addEventListener("click", () => {
-    const minutes = parseFloat(minutesInput.value);
-    if (isNaN(minutes) || minutes <= 0) {
-      exerciseResult.textContent = "กรุณากรอกจำนวนนาทีให้ถูกต้อง";
-      exerciseResult.classList.add("error");
-      exerciseResult.style.display = "block";
-      compareSummary.style.display = "none";
-      return;
-    }
-
-    const selectedName = exerciseSelect.value;
-    const ex = exercises.find(e => e.name === selectedName && e.part === bodyPartSelect.value);
-    if (!ex) return;
-
-    const burned = Math.round(ex.burnPerMin * minutes);
-    exerciseResult.classList.remove("error");
-    exerciseResult.innerHTML =
-      `🔥 ถ้าออกกำลังกายท่า <strong>${ex.name}</strong> เป็นเวลา <strong>${minutes} นาที</strong><br>` +
-      `จะเผาผลาญได้ประมาณ <strong>${burned} kcal</strong> (เป็นค่าประมาณ)`;
-    exerciseResult.style.display = "block";
-
-    // เปรียบเทียบกับแคลอรี่ที่กินจากโหมดเกมอาหาร
-    if (totalEatenCalories > 0) {
-      const ratio = (burned / totalEatenCalories) * 100;
-      let msg;
-      if (burned >= totalEatenCalories) {
-        msg = `✅ พลังงานที่เผาผลาญจากการออกกำลังกายในรอบนี้ใกล้เคียงหรือมากกว่าจำนวนแคลอรี่ที่คุณได้จากเกมอาหาร (${totalEatenCalories} kcal) แล้ว`;
-      } else {
-        msg = `ℹ️ พลังงานที่เผาผลาญจากการออกกำลังกายยังน้อยกว่าที่ได้จากเกมอาหาร (${totalEatenCalories} kcal) อาจต้องเพิ่มเวลา หรือสลับท่าออกกำลังกาย`;
+    function renderPlanSummary(){
+      if(plan.length===0){ planSummary.style.display='none'; return; }
+      planSummary.style.display='block';
+      // group by date
+      const byDate = {};
+      plan.forEach(p=>{
+        const d = p.date || 'ไม่ระบุวันที่';
+        if(!byDate[d]) byDate[d]=[];
+        byDate[d].push(p);
+      });
+      let html = '<strong>สรุปแผนกิจกรรม</strong><br>';
+      for(const d of Object.keys(byDate)){
+        html += `<div style="margin-top:8px"><em>${d}</em><ul style="padding-left:16px">`;
+        byDate[d].forEach(it=>{ html += `<li>${it.time||''} - ${it.name} (${it.duration} นาที) • ครู: ${it.teacher}</li>`; });
+        html += '</ul></div>';
       }
-
-      compareSummary.style.display = "block";
-      compareSummary.innerHTML =
-        `<strong>เปรียบเทียบกับแคลอรี่จากเกมอาหาร</strong><br>` +
-        `แคลอรี่จากอาหารในเกม: <strong>${totalEatenCalories} kcal</strong><br>` +
-        `แคลอรี่ที่เผาผลาญจากการออกกำลังกายครั้งนี้: <strong>${burned} kcal</strong> (~${ratio.toFixed(1)}% ของที่กินจากเกม)<br>` +
-        msg +
-        `<br><br>💡 ผู้สอนสามารถชวนผู้เรียนลองสลับท่า/เพิ่มเวลาการออกกำลังกาย แล้วให้ผู้เรียนสะท้อนว่า<br>` +
-        `"จะจัดสมดุลระหว่างการกินกับการใช้พลังงานในชีวิตจริงอย่างไรให้เหมาะกับตัวเอง"`;
-    } else {
-      compareSummary.style.display = "block";
-      compareSummary.innerHTML =
-        `ตอนนี้คุณยังไม่ได้เล่นโหมดเกมอาหาร หรือยังไม่สะสมแคลอรี่จากเกม<br>` +
-        `ลองกลับไปเล่นโหมดที่ 1 แล้วกลับมาดูว่าต้องออกกำลังกายเท่าไรถึงจะใกล้เคียงกัน 😊`;
+      planSummary.innerHTML = html;
     }
-  });
-</script>
+
+    // print plan (opens print dialog)
+    btnPrintPlan.addEventListener('click',()=>{
+      // prepare print-friendly view: open new window with summary
+      const w = window.open('','_blank','width=900,height=700');
+      const title = document.querySelector('h1').textContent;
+      w.document.write(`<html><head><title>${title} - สรุปแผน</title><meta charset="utf-8"></head><body><h2>${title}</h2>`);
+      w.document.write(document.getElementById('planSummary').innerHTML || '<p>ไม่มีแผน</p>');
+      w.document.write('</body></html>');
+      w.document.close();
+      w.print();
+    });
+
+    // export JSON
+    btnExportJSON.addEventListener('click',()=>{
+      const payload = { meta:{ageGroup:ageGroupSelect.value, createdAt:new Date().toISOString()}, library, plan };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload,null,2));
+      const a = document.createElement('a');
+      a.href = dataStr;
+      a.download = `school_health_plan_${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+    });
+
+    // populate initial UI
+    renderLibrary();
+
+    // copy template into clipboard
+    btnCopyTemplate.addEventListener('click',()=>{
+      const tpl = `Objective:\n${tplObjective.textContent}\n\nMaterials:\n${tplMaterials.textContent}\n\nSteps:\n${tplSteps.textContent}\n\nEvaluation:\n${tplEval.textContent}`;
+      navigator.clipboard?.writeText(tpl).then(()=> alert('คัดลอกเทมเพลตเรียบร้อย')) .catch(()=> alert('ไม่สามารถคัดลอกได้'));
+    });
+
+    // auto suggestions (สร้างแผนตัวอย่างสั้น)
+    btnAutoSuggestions.addEventListener('click',()=>{
+      if(!confirm('สร้างแผนตัวอย่าง 1 สัปดาห์? จะเติมกิจกรรมจากไลบรารีอัตโนมัติ')) return;
+      // clear plan
+      plan = [];
+      // choose up to 7 activities (or fewer if library small)
+      const picks = library.slice(0,7);
+      const today = new Date();
+      for(let i=0;i<picks.length;i++){
+        const d = new Date(today); d.setDate(today.getDate()+i);
+        const dateStr = d.toISOString().slice(0,10);
+        plan.push({ id:idGen(), activityId:picks[i].id, name:picks[i].name, date:dateStr, time:'09:00', teacher:'ครูผู้สอน', duration:picks[i].duration, category:picks[i].category});
+      }
+      renderPlan();
+    });
+
+    // clear plan
+    btnClearPlan.addEventListener('click',()=>{
+      if(!confirm('ล้างแผนทั้งหมดหรือไม่?')) return;
+      plan = []; renderPlan();
+    });
+
+    // initial basic template text (editable in DOM if needed)
+    tplObjective.textContent = 'เพิ่มความรู้และทักษะด้านโภชนาการ และกระตุ้นให้มีการออกกำลังกายเป็นประจำ';
+    tplMaterials.textContent = 'ใบงาน ตัวอย่างฉลากอาหาร ไมโครโฟน (ถ้าจำเป็น) อุปกรณ์กีฬาเบื้องต้น';
+    tplSteps.textContent = '1. แนะนำหัวข้อ/เกริ่น 2. กิจกรรมกลุ่ม/ทดลอง 3. สรุปและบ้านการบ้าน 4. ประเมินผลสั้น ๆ';
+    tplEval.textContent = 'แบบสอบถามก่อน/หลัง และ checklist พฤติกรรม (เช่น ออกกำลังกาย 3 วัน/สัปดาห์)';
+
+    // optional: when library is empty, show placeholder
+    if(library.length===0) activityList.innerHTML = '<div class="muted">ยังไม่มีกิจกรรมในไลบรารี</div>';
+  </script>
 </body>
 </html>
