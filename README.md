@@ -1,506 +1,602 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>เกมพัฒนาสุขภาพนักเรียน</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#f3f7ff; --card:#ffffff; --accent:#0f4bd8; --accent2:#06b6d4;
-    --muted:#6b7280; --success:#10b981; --danger:#ef4444;
-  }
-  *{box-sizing:border-box;font-family:"Sarabun",system-ui,-apple-system,"Segoe UI",sans-serif}
-  body{margin:0;background:linear-gradient(180deg,#eef6ff,#f8fbff);color:#0f172a}
-  .wrap{max-width:1100px;margin:28px auto;padding:20px}
-  header{display:flex;align-items:center;gap:16px}
-  .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;box-shadow:0 8px 30px rgba(15,75,216,0.12)}
-  h1{margin:0;font-size:20px}
-  p.lead{margin:4px 0 14px;color:var(--muted)}
-  .grid{display:grid;grid-template-columns:320px 1fr;gap:18px}
-  @media(max-width:980px){.grid{grid-template-columns:1fr}}
-  .card{background:var(--card);border-radius:12px;padding:14px;border:1px solid rgba(15,23,42,0.04);box-shadow:0 8px 30px rgba(15,23,42,0.04)}
-  label{display:block;font-weight:600;margin-bottom:6px}
-  select,input{width:100%;padding:8px;border-radius:8px;border:1px solid #e6eefb}
-  .tabs{display:flex;gap:8px;margin-top:10px}
-  .tab{flex:1;text-align:center;padding:8px;border-radius:999px;background:#eef5ff;color:var(--accent);cursor:pointer;font-weight:700}
-  .tab.active{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff}
-  .section{margin-top:12px}
-  .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#eef2ff;color:var(--accent);font-weight:700}
-  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#f1f5f9;color:#0f172a}
-  .muted{color:var(--muted);font-size:13px}
-  button{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border:0;padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:700}
-  button.ghost{background:transparent;color:var(--accent);border:1px solid rgba(15,75,216,0.12)}
-  .list{list-style:none;padding:0;margin:0}
-  .list li{padding:10px;border-radius:8px;border:1px solid #eef6ff;margin-bottom:8px;background:#fff;display:flex;justify-content:space-between;align-items:center}
-  .center{display:flex;align-items:center;justify-content:center}
-  .score{font-size:20px;font-weight:800;color:var(--accent)}
-  .result{margin-top:10px;padding:10px;border-radius:8px;background:#f1f8ff;border:1px solid #dbeefe}
-  .error{background:#fff1f2;border:1px solid #f8d7da;color:#b91c1c}
-  .success{background:#ecfdf5;border:1px solid #bbf7d0;color:#065f46}
-  .game-area{min-height:160px;display:flex;flex-direction:column;gap:8px}
-  .meter{height:10px;background:#eef2ff;border-radius:999px;overflow:hidden}
-  .meter > div{height:100%;background:linear-gradient(90deg,#06b6d4,#0f4bd8)}
-  .small{padding:6px 10px;font-size:13px;border-radius:8px}
-  .footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
-</style>
+  <meta charset="UTF-8">
+  <title>เกมคำนวณแคลอรี่ & การออกกำลังกาย (พร้อมเครื่องมือคำนวณ)</title>
+  <style>
+    * { box-sizing: border-box; font-family: "Sarabun", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { margin:0; padding:0; background:#f3f6fb; display:flex; justify-content:center; align-items:flex-start; min-height:100vh; }
+    .container { max-width:1100px; width:100%; margin:24px; background:#ffffff; border-radius:16px; padding:24px 28px 32px; box-shadow:0 12px 30px rgba(0,0,0,0.08); }
+    h1 { margin-top:0; font-size:26px; text-align:center; color:#1f3b70; }
+    h2 { font-size:20px; margin-bottom:8px; color:#1f3b70; }
+    p { margin:4px 0 8px; font-size:14px; color:#444; }
+    .flex { display:flex; gap:16px; flex-wrap:wrap; }
+    .card { background:#f9fbff; border-radius:12px; padding:16px 18px; flex:1 1 320px; min-width:260px; border:1px solid #e2e8f0; }
+    label { font-size:14px; font-weight:600; color:#1e293b; display:block; margin-bottom:6px; }
+    select, input[type="number"], input[type="text"] { width:100%; padding:8px 10px; border-radius:8px; border:1px solid #cbd5e1; font-size:14px; outline:none; }
+    select:focus, input:focus { border-color:#2563eb; box-shadow:0 0 0 2px rgba(37,99,235,0.18); }
+    button { border:none; border-radius:999px; padding:8px 16px; font-size:14px; cursor:pointer; background:#2563eb; color:#fff; font-weight:600; display:inline-flex; align-items:center; gap:4px; margin-top:8px; }
+    button.small { padding:6px 12px; font-size:13px; }
+    button.secondary { background:#64748b; }
+    .badge { display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; background:#e0edff; color:#1d4ed8; margin-right:4px; }
+    .age-info { font-size:13px; margin-top:6px; color:#475569; }
+    .tabs { display:flex; margin-top:16px; margin-bottom:8px; border-radius:999px; background:#e2e8f0; padding:4px; }
+    .tab { flex:1; text-align:center; padding:8px 10px; font-size:14px; cursor:pointer; border-radius:999px; transition:background 0.2s,color 0.2s; user-select:none; }
+    .tab.active { background:#ffffff; color:#1d4ed8; font-weight:600; box-shadow:0 1px 4px rgba(15,23,42,0.15); }
+    .tab-content { margin-top:12px; }
+    .question-box { margin-top:8px; padding:12px; border-radius:12px; background:#ffffff; border:1px solid #e2e8f0; }
+    .question-title { font-size:16px; font-weight:600; margin-bottom:6px; color:#0f172a; }
+    .question-sub { font-size:13px; color:#64748b; margin-bottom:8px; }
+    .status-row { display:flex; justify-content:space-between; font-size:13px; color:#475569; margin-top:8px; }
+    .result { margin-top:8px; padding:8px 10px; border-radius:8px; font-size:13px; background:#eff6ff; color:#1d4ed8; }
+    .result.error { background:#fef2f2; color:#b91c1c; }
+    .summary { margin-top:10px; padding:10px; border-radius:10px; background:#f1f5f9; font-size:13px; color:#0f172a; }
+    .pill-row { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
+    .pill { padding:4px 10px; border-radius:999px; font-size:12px; background:#e5e7eb; color:#374151; }
+    .hint { font-size:12px; color:#6b7280; margin-top:4px; }
+    .disclaimer { margin-top:16px; font-size:11px; color:#6b7280; border-top:1px dashed #cbd5e1; padding-top:8px; }
+    /* new styles for calculator */
+    .calc-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+    .calc-row > * { flex:1 1 140px; }
+    .calc-result { margin-top:10px; padding:12px; border-radius:8px; background:#eef6ff; border:1px solid #dbeafe; color:#0f172a; }
+    .muted { color:#6b7280; font-size:13px; }
+  </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <header>
-      <div class="logo">GH</div>
-      <div>
-        <h1>เกมพัฒนาสุขภาพนักเรียน</h1>
-        <p class="lead">สนุก เรียนรู้ และสร้างนิสัยสุขภาพดี — เล่นเป็นทีม เก็บแต้ม รับเหรียญ!</p>
-      </div>
-      <div style="margin-left:auto" class="center">
-        <div style="text-align:right;margin-right:12px">
-          <div class="muted">คะแนนรวม</div>
-          <div class="score" id="totalScore">0</div>
-        </div>
-      </div>
-    </header>
+<div class="container">
+  <h1>🎮 เกมคำนวณแคลอรี่ & การออกกำลังกายในชีวิตประจำวัน</h1>
+  <p style="text-align:center;font-size:13px;color:#64748b;">
+    เลือกช่วงอายุ → เล่นเกมทายแคลอรี่อาหาร → ดูว่าจะเผาผลาญด้วยการออกกำลังกายส่วนไหนของร่างกายได้บ้าง
+  </p>
 
-    <div class="grid" style="margin-top:18px">
-      <!-- LEFT: Menu / Profile -->
-      <aside>
-        <div class="card">
-          <div style="display:flex;align-items:center;gap:12px">
-            <div style="width:56px;height:56px;border-radius:10px;background:#eef5ff;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent)">ST</div>
-            <div>
-              <div style="font-weight:800" id="playerName">นักเรียน</div>
-              <div class="muted" id="playerAge">อายุ: -</div>
-            </div>
-          </div>
+  <!-- NEW: Calorie Calculator Card -->
+  <div class="card" style="margin-bottom:12px;">
+    <h2>🧮 เครื่องมือคำนวณพลังงาน (Calorie Calculator)</h2>
+    <p class="muted">คำนวณ BMR (พื้นฐาน) และ TDEE (พลังงานทั้งวัน) ด้วยสูตร Mifflin–St Jeor — เหมาะสำหรับผู้ใหญ่และวัยรุ่น (≥13 ปี)</p>
 
-          <div class="section">
-            <label>เลือกช่วงอายุ</label>
-            <select id="ageGroup">
-              <option value="child">7–12 ปี</option>
-              <option value="teen" selected>13–18 ปี</option>
-              <option value="adult">19–59 ปี</option>
-            </select>
-          </div>
+    <div class="calc-row">
+      <label style="width:100%;">เพศ</label>
+      <select id="calcSex" style="flex:0 0 160px;">
+        <option value="male">ชาย</option>
+        <option value="female">หญิง</option>
+      </select>
 
-          <div class="section">
-            <label>ม็อดของเกม</label>
-            <div class="tabs">
-              <div class="tab active" data-tab="quiz">ทายแคลอรี่</div>
-              <div class="tab" data-tab="exercise">มินิ: ออกกำลังกาย</div>
-              <div class="tab" data-tab="habit">ภารกิจนิสัย</div>
-            </div>
-          </div>
-
-          <div class="section">
-            <label>สถานะ/เหรียญ</label>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <div class="pill">Level <span id="playerLevel">1</span></div>
-              <div class="badge" id="coinCount">0 ✦</div>
-            </div>
-          </div>
-
-          <div class="section">
-            <button id="btnViewSummary" class="small ghost">สรุปผล / พิมพ์</button>
-          </div>
-        </div>
-      </aside>
-
-      <!-- RIGHT: Game content -->
-      <main>
-        <div class="card">
-          <!-- dynamic content area -->
-          <div id="gameContainer" class="game-area">
-            <!-- initial blank -->
-            <div style="text-align:center;color:var(--muted)">เลือกม็อดเกมด้านซ้ายเพื่อเริ่มเล่น</div>
-          </div>
-
-          <div id="gameFooter" style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
-            <div class="muted">เวลาที่เล่น: <span id="playTime">0</span> นาที</div>
-            <div>
-              <button id="btnReset" class="small ghost">รีเซ็ตคะแนนในเครื่อง</button>
-              <button id="btnSave" class="small">บันทึกผล</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="card" style="margin-top:12px">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <div class="muted">Leaderboard (เครื่องนี้)</div>
-              <div style="font-weight:800" id="leaderSummary">ไม่มีข้อมูล</div>
-            </div>
-            <div style="text-align:right">
-              <div class="muted">ยอดแต้มสูงสุด</div>
-              <div style="font-weight:800" id="bestScore">0</div>
-            </div>
-          </div>
-        </div>
-      </main>
+      <label style="width:100%;">อายุ (ปี)</label>
+      <input id="calcAge" type="number" value="16" min="10" style="flex:0 0 120px;">
     </div>
 
-    <div class="footer">เกมนี้เป็นเครื่องมือการศึกษา — ไม่ใช่คำแนะนำทางการแพทย์</div>
+    <div class="calc-row">
+      <label style="width:100%;">น้ำหนัก (กก.)</label>
+      <input id="calcWeight" type="number" value="55" min="20">
+
+      <label style="width:100%;">ส่วนสูง (ซม.)</label>
+      <input id="calcHeight" type="number" value="165" min="80">
+    </div>
+
+    <div style="margin-top:8px;">
+      <label>ระดับกิจกรรม (Activity level)</label>
+      <select id="calcActivity">
+        <option value="1.2">นั่งมาก / ออกกำลังกายน้อย (Sedentary) — x1.2</option>
+        <option value="1.375">เบา (Light) — x1.375</option>
+        <option value="1.55" selected>ปานกลาง (Moderate) — x1.55</option>
+        <option value="1.725">หนัก (Active) — x1.725</option>
+        <option value="1.9">หนักมาก (Very active) — x1.9</option>
+      </select>
+    </div>
+
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+      <button id="btnCalc" class="small">คำนวณ BMR & TDEE</button>
+      <button id="btnUseTDEE" class="small secondary">ใช้ค่า TDEE ในเกม (เปรียบเทียบ)</button>
+      <button id="btnResetCalc" class="small">รีเซ็ต</button>
+    </div>
+
+    <div id="calcOutput" class="calc-result" style="display:none;"></div>
+
+    <div class="hint">
+      <strong>หมายเหตุ:</strong>
+      สูตร Mifflin–St Jeor เหมาะกับผู้ที่อายุ ≥13 ปี สำหรับเด็กอายุต่ำกว่า 13 ปี ควรใช้ตารางการให้พลังงานหรือปรึกษานักโภชนาการ
+    </div>
   </div>
 
-<script>
-/* ---------------------------
-   Data
-----------------------------*/
-const foods = [
-  { name:"ข้าวมันไก่", calories:600 },
-  { name:"ข้าวผัดกะเพรา+ไข่ดาว", calories:650 },
-  { name:"ส้มตำไทย", calories:120 },
-  { name:"ชานมไข่มุก 500ml", calories:300 },
-  { name:"โค้ก 330ml", calories:140 },
-  { name:"ขนมถุง มันฝรั่งทอด", calories:450 },
-  { name:"นมจืด 250ml", calories:130 },
-  { name:"ผลไม้ (กล้วย)", calories:90 },
-  { name:"สลัดผัก", calories:90 },
-  { name:"ก๋วยเตี๋ยว 1 ชาม", calories:320 }
-];
+  <!-- เลือกช่วงอายุ -->
+  <div class="card" style="margin-bottom:12px;">
+    <h2>1️⃣ เลือกช่วงอายุ</h2>
+    <label for="ageGroup">ช่วงอายุของผู้เล่น</label>
+    <select id="ageGroup">
+      <option value="teen">13–18 ปี (วัยรุ่น)</option>
+      <option value="adult">19–59 ปี (ผู้ใหญ่)</option>
+      <option value="child">7–12 ปี (เด็ก)</option>
+      <option value="senior">60 ปีขึ้นไป (ผู้สูงอายุ)</option>
+    </select>
+    <div id="ageInfo" class="age-info"></div>
+  </div>
 
-const exercises = [
-  { name:"เดินเร็ว", burnPerMin:4 },
-  { name:"วิ่งเหยาะ", burnPerMin:8 },
-  { name:"กระโดดเชือก", burnPerMin:10 },
-  { name:"สควอท", burnPerMin:6 },
-  { name:"วิดพื้น", burnPerMin:7 },
-];
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" data-tab="food">โหมดที่ 1: เกมทายแคลอรี่อาหาร</div>
+    <div class="tab" data-tab="exercise">โหมดที่ 2: เกมเลือกการออกกำลังกาย</div>
+  </div>
 
-/* ---------------------------
-   Game state (in-memory, persist to localStorage)
-----------------------------*/
-let state = {
-  name: 'นักเรียน',
-  ageGroup: 'teen',
-  score: 0,
-  coins: 0,
-  level: 1,
-  playMinutes: 0,
-  history: [] // {mode, details, score, time}
-};
+  <div class="tab-content">
+    <!-- FOOD TAB -->
+    <div id="tab-food">
+      <div class="flex">
 
-const STORAGE_KEY = 'school_health_game_v1';
+        <!-- เกมทายอาหาร -->
+        <div class="card">
+          <h2>2️⃣ เกมทายแคลอรี่</h2>
+          <p>ระบบจะสุ่มอาหาร/เครื่องดื่มมาให้ 1 อย่าง ให้ลองเดาว่ามีแคลอรี่ประมาณเท่าไร</p>
 
-/* ---------------------------
-   DOM refs
-----------------------------*/
-const tabs = document.querySelectorAll('.tab');
-const gameContainer = document.getElementById('gameContainer');
-const ageGroupEl = document.getElementById('ageGroup');
-const totalScoreEl = document.getElementById('totalScore');
-const coinCountEl = document.getElementById('coinCount');
-const playerLevelEl = document.getElementById('playerLevel');
-const playerNameEl = document.getElementById('playerName');
-const playerAgeEl = document.getElementById('playerAge');
-const playTimeEl = document.getElementById('playTime');
-const leaderSummary = document.getElementById('leaderSummary');
-const bestScoreEl = document.getElementById('bestScore');
+          <button id="btnNewQuestion">เริ่มคำถามใหม่ / เปลี่ยนเมนู</button>
 
-const btnReset = document.getElementById('btnReset');
-const btnSave = document.getElementById('btnSave');
-const btnViewSummary = document.getElementById('btnViewSummary');
+          <div id="foodQuestionBox" class="question-box" style="display:none;">
+            <div class="badge" id="foodIndexBadge">คำถามข้อ 1/5</div>
+            <div class="question-title" id="foodName">ชื่ออาหาร</div>
+            <div class="question-sub">ลองเดาแคลอรี่ (kcal)</div>
 
-/* ---------------------------
-   Init
-----------------------------*/
-function loadState(){
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if(raw){
-    try{ state = JSON.parse(raw); } catch(e){ console.warn('parse err',e); }
-  }
-  updateUI();
-}
-function saveState(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  showToast('บันทึกผลเรียบร้อย');
-  updateLeader();
-}
-function resetState(){
-  if(!confirm('ต้องการรีเซ็ตคะแนนและข้อมูลบนเครื่องนี้หรือไม่?')) return;
-  state = { name:'นักเรียน', ageGroup:'teen', score:0, coins:0, level:1, playMinutes:0, history:[] };
-  saveState();
-  updateUI();
-}
+            <label for="calInput">กรอกแคลอรี่ที่คุณเดา</label>
+            <input type="number" id="calInput" placeholder="เช่น 250" min="0">
+            <button id="btnCheckFood" class="small">ตรวจคำตอบ</button>
 
-/* ---------------------------
-   UI helpers
-----------------------------*/
-function updateUI(){
-  totalScoreEl.textContent = state.score;
-  coinCountEl.textContent = `${state.coins} ✦`;
-  playerLevelEl.textContent = state.level;
-  playerNameEl.textContent = state.name;
-  playerAgeEl.textContent = `ช่วงอายุ: ${state.ageGroup}`;
-  playTimeEl.textContent = state.playMinutes;
-  leaderSummary.textContent = state.history.length ? `${state.history.length} รอบเล่น` : 'ไม่มีข้อมูล';
-  bestScoreEl.textContent = localStorage.getItem('bestScore') || 0;
-}
+            <div class="hint">จะถือว่าถูกถ้าเดาใกล้เคียง ±50 kcal</div>
 
-function showToast(msg){
-  const div = document.createElement('div');
-  div.textContent = msg;
-  div.style.position='fixed';
-  div.style.right='16px';
-  div.style.bottom='16px';
-  div.style.background='#0f172a';
-  div.style.color='#fff';
-  div.style.padding='10px 14px';
-  div.style.borderRadius='8px';
-  div.style.boxShadow='0 8px 30px rgba(15,23,42,0.2)';
-  document.body.appendChild(div);
-  setTimeout(()=>{ div.style.opacity='0'; setTimeout(()=>div.remove(),400); },1800);
-}
+            <div id="foodResult" class="result" style="display:none;"></div>
 
-/* ---------------------------
-   Tab handling
-----------------------------*/
-tabs.forEach(t=>{
-  t.addEventListener('click', ()=> {
-    tabs.forEach(x=>x.classList.remove('active'));
-    t.classList.add('active');
-    const tab = t.dataset.tab;
-    openTab(tab);
-  });
-});
+            <div class="status-row">
+              <span>คะแนน: <strong id="scoreText">0</strong></span>
+              <span>แคลอรี่สะสม: <strong id="totalEaten">0</strong> kcal</span>
+            </div>
+          </div>
 
-function openTab(tab){
-  gameContainer.innerHTML = '';
-  if(tab === 'quiz') renderQuiz();
-  else if(tab === 'exercise') renderExerciseMini();
-  else if(tab === 'habit') renderHabit();
-}
+          <div id="foodSummary" class="summary" style="display:none;"></div>
+        </div>
 
-/* ---------------------------
-   QUIZ: ทายแคลอรี่
-----------------------------*/
-function renderQuiz(){
-  const box = document.createElement('div');
-  box.innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div><strong>เกมทายแคลอรี่</strong><div class="muted">เดาแคลอรี่ให้ใกล้เคียงเพื่อรับคะแนน</div></div>
-      <div class="pill">คำถามที่ <span id="qIndex">0</span>/5</div>
+        <!-- ตัวอย่างเมนู -->
+        <div class="card">
+          <h2>🍚 ตัวอย่างเมนูในเกม</h2>
+          <p>อาหารไทยและเครื่องดื่มในชีวิตประจำวัน</p>
+          <div class="pill-row" id="foodListPreview"></div>
+        </div>
+      </div>
     </div>
-  `;
-  const content = document.createElement('div'); content.className='section';
-  const foodName = document.createElement('div'); foodName.style.fontWeight='800'; foodName.style.fontSize='18px';
-  const hint = document.createElement('div'); hint.className='muted'; hint.style.marginTop='6px';
-  const input = document.createElement('input'); input.type='number'; input.placeholder='กรอกแคลอรี่ (kcal)';
-  input.style.marginTop='8px';
-  const btn = document.createElement('button'); btn.textContent='ตรวจคำตอบ';
-  const res = document.createElement('div'); res.className='result'; res.style.display='none';
 
-  content.appendChild(foodName); content.appendChild(hint); content.appendChild(input); content.appendChild(btn); content.appendChild(res);
-  box.appendChild(content);
-  gameContainer.appendChild(box);
+    <!-- EXERCISE TAB -->
+    <div id="tab-exercise" style="display:none;">
+      <div class="flex">
 
-  // quiz logic
-  let index = 0; const maxQ=5; let roundScore=0; let accumulateCalories=0;
-  function nextQuestion(){
-    if(index>=maxQ){
-      // finish
-      res.style.display='block';
-      res.className='result success';
-      res.innerHTML = `จบเกม! คะแนนจากรอบนี้: <strong>${roundScore}</strong><br>รวมแคลอรี่ที่ปรากฏ: ${accumulateCalories} kcal`;
-      // update state
-      state.score += roundScore;
-      state.coins += Math.floor(roundScore/2);
-      state.history.push({mode:'quiz', score:roundScore, time: new Date().toISOString()});
-      state.playMinutes += 2;
-      checkBest();
-      updateUI(); saveState();
+        <!-- แบบออกกำลังกาย -->
+        <div class="card">
+          <h2>3️⃣ เลือกส่วนของร่างกาย</h2>
+
+          <label for="bodyPart">ส่วนของร่างกาย</label>
+          <select id="bodyPart">
+            <option value="legs">ขา / ระบบหัวใจ</option>
+            <option value="arms">แขน / ไหล่</option>
+            <option value="core">ลำตัว / หน้าท้อง</option>
+            <option value="full">ทั้งตัว</option>
+          </select>
+
+          <label for="exerciseSelect" style="margin-top:10px;">ท่าออกกำลังกาย</label>
+          <select id="exerciseSelect"></select>
+
+          <label for="minutesInput" style="margin-top:10px;">ระยะเวลา (นาที)</label>
+          <input type="number" id="minutesInput" value="30" min="5" step="5">
+
+          <button id="btnCalcBurn">คำนวณแคลอรี่ที่เผาผลาญ</button>
+
+          <div id="exerciseResult" class="result" style="display:none;"></div>
+          <div class="summary" id="compareSummary" style="display:none;"></div>
+        </div>
+
+        <!-- ตัวอย่างท่าออกกำลังกาย -->
+        <div class="card">
+          <h2>🏃‍♀️ ตัวอย่างท่าออกกำลังกาย</h2>
+          <ul style="font-size:13px;color:#475569;padding-left:18px;">
+            <li>สควอท: ~6 kcal/นาที</li>
+            <li>วิดพื้น: ~7 kcal/นาที</li>
+            <li>Mountain Climber: ~8 kcal/นาที</li>
+            <li>Jumping Jack: ~8 kcal/นาที</li>
+            <li>Burpee: ~12 kcal/นาที</li>
+            <li>กระโดดเชือก: ~10 kcal/นาที</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <div class="disclaimer">
+    ⚠️ เกมนี้ใช้ค่าประมาณเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำด้านโภชนาการจริง — หากมีคำถามเชิงการรักษาหรือโปรแกรมโภชนาการจริง ควรปรึกษาผู้เชี่ยวชาญ
+  </div>
+
+</div>
+
+<script>
+  /* -----------------------------------------------------
+      1) ข้อมูลช่วงอายุ
+  ----------------------------------------------------- */
+  const ageGroups = {
+    child: { label: "7–12 ปี (เด็ก)", recommend: "1,600–2,000 kcal/วัน" },
+    teen:  { label: "13–18 ปี (วัยรุ่น)", recommend: "2,000–2,400 kcal/วัน" },
+    adult: { label: "19–59 ปี (ผู้ใหญ่)", recommend: "1,800–2,400 kcal/วัน" },
+    senior:{ label: "60 ปีขึ้นไป (ผู้สูงอายุ)", recommend: "1,600–2,000 kcal/วัน" }
+  };
+
+  /* -----------------------------------------------------
+      2) อาหารตัวอย่าง (เพิ่มหลากหลาย)
+  ----------------------------------------------------- */
+  const foods = [
+    { name: "ข้าวมันไก่", calories: 600 }, { name: "ข้าวขาหมู", calories: 700 },
+    { name: "ข้าวผัดหมู", calories: 680 }, { name: "กะเพราไก่ + ไข่ดาว", calories: 650 },
+    { name: "ข้าวไข่เจียว", calories: 450 }, { name: "ก๋วยเตี๋ยวเรือ", calories: 320 },
+    { name: "ก๋วยเตี๋ยวผัดไทย", calories: 550 }, { name: "ส้มตำไทย", calories: 120 },
+    { name: "ส้มตำปูปลาร้า", calories: 80 }, { name: "ไก่ทอด 1 ชิ้น", calories: 350 },
+    { name: "หมูปิ้ง 1 ไม้", calories: 90 }, { name: "ลูกชิ้นปิ้ง 1 ไม้", calories: 70 },
+    { name: "ขนมครก 2 ชิ้น", calories: 200 }, { name: "บัวลอย", calories: 280 },
+    { name: "เฉาก๊วย", calories: 180 }, { name: "ไอศกรีม 1 ก้อน", calories: 140 },
+    { name: "เครปญี่ปุ่น", calories: 330 }, { name: "ชานมไข่มุก", calories: 300 },
+    { name: "ชาไทยเย็น", calories: 250 }, { name: "โอเลี้ยง", calories: 220 },
+    { name: "โค้กกระป๋อง", calories: 140 }, { name: "น้ำส้ม", calories: 110 },
+    { name: "ลาเต้หวานน้อย", calories: 150 }, { name: "นมจืด UHT", calories: 130 },
+    { name: "ป๊อบคอร์นหวาน", calories: 300 }, { name: "มันฝรั่งทอดซอง", calories: 500 },
+    { name: "ขนมปังไส้ช็อกโกแลต", calories: 270 }, { name: "เบอร์เกอร์หมู", calories: 550 },
+    { name: "ไก่ทอด KFC (น่อง)", calories: 280 }, { name: "กล้วยหอม 1 ผล", calories: 90 },
+    { name: "แตงโม 1 ชิ้น", calories: 30 }, { name: "ลำไย 10 เม็ด", calories: 60 },
+    { name: "ทุเรียน 1 เม็ด", calories: 130 }, { name: "มะม่วงสุก", calories: 135 },
+    { name: "สลัดผัก + น้ำสลัดงา", calories: 90 }, { name: "อกไก่ย่าง 100 กรัม", calories: 165 },
+    { name: "ไข่ต้ม 1 ฟอง", calories: 70 }, { name: "แซนวิชโฮลวีทไก่", calories: 240 }
+  ];
+
+  /* -----------------------------------------------------
+      3) ท่าออกกำลังกายใหม่ (ครบทุกส่วน)
+  ----------------------------------------------------- */
+  const exercises = [
+    { part: "legs", name: "เดินเร็ว", burnPerMin: 4 }, { part: "legs", name: "วิ่งเหยาะ", burnPerMin: 8 },
+    { part: "legs", name: "อินเตอร์วัลรัน", burnPerMin: 9 }, { part: "legs", name: "สควอท", burnPerMin: 6 },
+    { part: "legs", name: "ลันจ์", burnPerMin: 6 }, { part: "legs", name: "เตะขาเข้าต้นขา", burnPerMin: 5 },
+    { part: "arms", name: "วิดพื้น", burnPerMin: 7 }, { part: "arms", name: "ดัมเบลเบาๆ", burnPerMin: 5 },
+    { part: "arms", name: "Lateral Raise", burnPerMin: 4 }, { part: "arms", name: "Wall Push-Up", burnPerMin: 4 },
+    { part: "arms", name: "Arm Circle", burnPerMin: 3 }, { part: "arms", name: "Triceps Dip", burnPerMin: 6 },
+    { part: "core", name: "ซิทอัพ", burnPerMin: 5 }, { part: "core", name: "แพลงก์", burnPerMin: 5 },
+    { part: "core", name: "ครันช์", burnPerMin: 4 }, { part: "core", name: "Russian Twist", burnPerMin: 6 },
+    { part: "core", name: "Mountain Climber", burnPerMin: 8 }, { part: "core", name: "Leg Raise", burnPerMin: 5 },
+    { part: "full", name: "ปั่นจักรยาน", burnPerMin: 7 }, { part: "full", name: "กระโดดเชือก", burnPerMin: 10 },
+    { part: "full", name: "Burpee", burnPerMin: 12 }, { part: "full", name: "Jumping Jack", burnPerMin: 8 },
+    { part: "full", name: "โยคะเบา ๆ", burnPerMin: 3 }, { part: "full", name: "เต้นแอโรบิก", burnPerMin: 7 },
+    { part: "full", name: "เต้น K-Pop", burnPerMin: 9 }
+  ];
+
+  /* -----------------------------------------------------
+      4) ระบบแสดงข้อมูลช่วงอายุ
+  ----------------------------------------------------- */
+  const ageGroupSelect = document.getElementById("ageGroup");
+  const ageInfoDiv = document.getElementById("ageInfo");
+
+  function updateAgeInfo() {
+    const key = ageGroupSelect.value;
+    const info = ageGroups[key];
+    ageInfoDiv.innerHTML = `<span class="badge">${info.label}</span> ต้องการพลังงานประมาณ <strong>${info.recommend}</strong>`;
+  }
+  updateAgeInfo();
+  ageGroupSelect.addEventListener("change", updateAgeInfo);
+
+  /* -----------------------------------------------------
+      5) ระบบแท็บ
+  ----------------------------------------------------- */
+  const tabs = document.querySelectorAll(".tab");
+  const tabFood = document.getElementById("tab-food");
+  const tabExercise = document.getElementById("tab-exercise");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+
+      if (tab.dataset.tab === "food") {
+        tabFood.style.display = "block";
+        tabExercise.style.display = "none";
+      } else {
+        tabFood.style.display = "none";
+        tabExercise.style.display = "block";
+      }
+    });
+  });
+
+  /* -----------------------------------------------------
+      6) แสดงตัวอย่างอาหาร
+  ----------------------------------------------------- */
+  const foodListPreview = document.getElementById("foodListPreview");
+
+  function renderFoodPreview() {
+    foodListPreview.innerHTML = "";
+    foods.forEach(f => {
+      const pill = document.createElement("div");
+      pill.className = "pill";
+      pill.textContent = `${f.name} ~ ${f.calories} kcal`;
+      foodListPreview.appendChild(pill);
+    });
+  }
+  renderFoodPreview();
+
+  /* -----------------------------------------------------
+      7) เกมอาหาร (unchanged)
+  ----------------------------------------------------- */
+  let currentFood = null;
+  let questionIndex = 0;
+  const maxQuestions = 5;
+  let score = 0;
+  let totalEatenCalories = 0;
+  let gameFinished = false;
+
+  const btnNewQuestion = document.getElementById("btnNewQuestion");
+  const foodQuestionBox = document.getElementById("foodQuestionBox");
+  const foodNameDiv = document.getElementById("foodName");
+  const foodIndexBadge = document.getElementById("foodIndexBadge");
+  const calInput = document.getElementById("calInput");
+  const btnCheckFood = document.getElementById("btnCheckFood");
+  const foodResult = document.getElementById("foodResult");
+  const scoreText = document.getElementById("scoreText");
+  const totalEaten = document.getElementById("totalEaten");
+  const foodSummary = document.getElementById("foodSummary");
+
+  function newFoodQuestion() {
+    if (gameFinished) {
+      questionIndex = 0;
+      score = 0;
+      totalEatenCalories = 0;
+      gameFinished = false;
+      foodSummary.style.display = "none";
+      scoreText.textContent = 0;
+      totalEaten.textContent = 0;
+    }
+
+    if (questionIndex >= maxQuestions) {
+      showFoodSummary();
       return;
     }
-    index++;
-    document.getElementById('qIndex').textContent = index;
-    const f = foods[Math.floor(Math.random()*foods.length)];
-    currentFood = f;
-    foodName.textContent = f.name;
-    hint.textContent = `ประมาณการจริงจะถือว่า "ใกล้เคียง" ถ้า ±50 kcal`;
-    input.value = '';
-    res.style.display='none';
+
+    const randomIndex = Math.floor(Math.random() * foods.length);
+    currentFood = foods[randomIndex];
+
+    questionIndex++;
+    foodIndexBadge.textContent = `คำถามข้อ ${questionIndex}/${maxQuestions}`;
+    foodNameDiv.textContent = currentFood.name;
+
+    calInput.value = "";
+    foodResult.style.display = "none";
+    foodQuestionBox.style.display = "block";
   }
 
-  let currentFood = null;
-  nextQuestion();
+  btnNewQuestion.addEventListener("click", newFoodQuestion);
 
-  btn.addEventListener('click', ()=>{
-    const val = parseFloat(input.value);
-    if(isNaN(val)){ res.style.display='block'; res.className='result error'; res.textContent='กรุณากรอกตัวเลข'; return; }
+  btnCheckFood.addEventListener("click", () => {
+    const val = parseFloat(calInput.value);
+    if (isNaN(val) || val < 0) {
+      foodResult.textContent = "กรอกตัวเลขให้ถูกต้องก่อนนะ";
+      foodResult.classList.add("error");
+      foodResult.style.display = "block";
+      return;
+    }
+
     const diff = Math.abs(val - currentFood.calories);
-    let gain=0;
-    if(diff<=10){ gain=10; res.className='result success'; res.innerHTML = `เยี่ยม! ตรงมาก ได้ ${gain} คะแนน (จริง ${currentFood.calories} kcal)`; }
-    else if(diff<=50){ gain=6; res.className='result success'; res.innerHTML = `ดีมาก ได้ ${gain} คะแนน (จริง ${currentFood.calories} kcal)`; }
-    else if(diff<=100){ gain=3; res.className='result'; res.innerHTML = `พอได้ ได้ ${gain} คะแนน (จริง ${currentFood.calories} kcal)`; }
-    else { gain=0; res.className='result error'; res.innerHTML = `พลาดไป ได้ ${gain} คะแนน (จริง ${currentFood.calories} kcal)`; }
-    res.style.display='block';
-    roundScore += gain;
-    accumulateCalories += currentFood.calories;
-    // small delay then next
-    setTimeout(nextQuestion,900);
-  });
-}
+    const tolerance = 50;
 
-/* ---------------------------
-   EXERCISE MINI: Tap challenge
-   - ผู้เล่นต้องกดปุ่มเร็วที่สุดใน 20 วินาที
-----------------------------*/
-function renderExerciseMini(){
-  const box = document.createElement('div');
-  box.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
-    <div><strong>มินิเกม: ออกกำลังกาย (Tap Challenge)</strong><div class="muted">กดปุ่มให้ได้มากที่สุดภายในเวลา</div></div>
-    <div class="pill">เวลา: 20 วินาที</div>
-  </div>`;
-  const area = document.createElement('div'); area.style.marginTop='12px';
-  const counter = document.createElement('div'); counter.style.fontSize='28px'; counter.style.fontWeight='800'; counter.textContent='0';
-  const timerBar = document.createElement('div'); timerBar.className='meter'; timerBar.style.marginTop='8px'; const meterInner = document.createElement('div'); meterInner.style.width='100%'; timerBar.appendChild(meterInner);
-  const btn = document.createElement('button'); btn.textContent='เริ่ม/กดที่นี่!'; btn.style.marginTop='12px'; btn.style.width='100%'; btn.className='';
-  area.appendChild(counter); area.appendChild(timerBar); area.appendChild(btn);
-  box.appendChild(area); gameContainer.appendChild(box);
-
-  let running=false; let count=0; let timeLeft=20; let interval=null;
-  btn.addEventListener('click', ()=>{
-    if(!running){
-      // start
-      running=true; count=0; timeLeft=20; counter.textContent='0'; meterInner.style.width='100%';
-      btn.textContent='กด!';
-      interval = setInterval(()=>{
-        timeLeft -= 0.1;
-        const pct = Math.max(0, (timeLeft/20))*100;
-        meterInner.style.width = pct + '%';
-        if(timeLeft<=0){
-          clearInterval(interval); running=false; btn.textContent='เริ่มใหม่';
-          // evaluate
-          const earned = Math.min(30, Math.floor(count/3)); // scale
-          state.score += earned;
-          state.coins += Math.floor(earned/2);
-          state.history.push({mode:'exercise', score:earned, details:{taps:count}, time:new Date().toISOString()});
-          state.playMinutes += 1;
-          checkBest();
-          updateUI(); saveState();
-          showToast(`คุณกด ${count} ครั้ง — ได้ ${earned} คะแนน`);
-        }
-      },100);
+    if (diff <= tolerance) {
+      score++;
+      foodResult.classList.remove("error");
+      foodResult.innerHTML =
+        `✅ ใกล้เคียงดีมาก!<br>เฉลย: <strong>${currentFood.calories} kcal</strong>`;
     } else {
-      // count tap
-      count++;
-      counter.textContent = count;
-      // small animation
-      btn.style.transform = 'scale(0.98)';
-      setTimeout(()=>btn.style.transform='scale(1)',60);
+      foodResult.classList.add("error");
+      foodResult.innerHTML =
+        `❌ ห่างไปนิดนะ<br>เฉลย: <strong>${currentFood.calories} kcal</strong>`;
+    }
+
+    foodResult.style.display = "block";
+    totalEatenCalories += currentFood.calories;
+    totalEaten.textContent = totalEatenCalories;
+    scoreText.textContent = score;
+
+    if (questionIndex >= maxQuestions) {
+      gameFinished = true;
+      showFoodSummary();
     }
   });
-}
 
-/* ---------------------------
-   HABIT CHALLENGE:
-   - เลือก 1 ภารกิจ/นิสัย และบันทึกวันที่ทำ
-----------------------------*/
-function renderHabit(){
-  const box = document.createElement('div');
-  box.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
-    <div><strong>ภารกิจนิสัย (Habit Challenge)</strong><div class="muted">เลือกภารกิจ แล้วกด 'เช็กอิน' เมื่อทำสำเร็จ</div></div>
-    <div class="badge">สะสมแต้มรายสัปดาห์</div>
-  </div>`;
-  const area = document.createElement('div'); area.style.marginTop='12px';
-  const select = document.createElement('select');
-  ['เดิน 20 นาที','ดื่มน้ำ 6 แก้ว','งดของหวาน 1 วัน','นอนก่อน 22:00'].forEach(t=> {
-    const opt = document.createElement('option'); opt.value=t; opt.textContent=t; select.appendChild(opt);
+  function showFoodSummary() {
+    const ageKey = ageGroupSelect.value;
+    const info = ageGroups[ageKey];
+
+    foodSummary.style.display = "block";
+    foodSummary.innerHTML =
+      `<strong>🎉 สรุปคะแนน</strong><br>
+       ตอบถูกใกล้เคียง: <strong>${score}/${maxQuestions}</strong><br>
+       แคลอรี่รวมจากเกม: <strong>${totalEatenCalories} kcal</strong><br><br>
+       เทียบกับช่วงอายุ: <strong>${info.label}</strong><br>
+       ต้องการพลังงานต่อวันประมาณ: <strong>${info.recommend}</strong>`;
+  }
+
+  /* -----------------------------------------------------
+      8) ระบบออกกำลังกาย (unchanged)
+  ----------------------------------------------------- */
+  const bodyPartSelect = document.getElementById("bodyPart");
+  const exerciseSelect = document.getElementById("exerciseSelect");
+  const minutesInput = document.getElementById("minutesInput");
+  const btnCalcBurn = document.getElementById("btnCalcBurn");
+  const exerciseResult = document.getElementById("exerciseResult");
+  const compareSummary = document.getElementById("compareSummary");
+
+  function populateExerciseOptions() {
+    const part = bodyPartSelect.value;
+    const options = exercises.filter(e => e.part === part);
+
+    exerciseSelect.innerHTML = "";
+    options.forEach(e => {
+      const opt = document.createElement("option");
+      opt.value = e.name;
+      opt.textContent = `${e.name} (~${e.burnPerMin} kcal/นาที)`;
+      exerciseSelect.appendChild(opt);
+    });
+  }
+  populateExerciseOptions();
+
+  bodyPartSelect.addEventListener("change", populateExerciseOptions);
+
+  btnCalcBurn.addEventListener("click", () => {
+    const minutes = parseFloat(minutesInput.value);
+    if (isNaN(minutes) || minutes <= 0) {
+      exerciseResult.textContent = "กรอกเวลาที่ถูกต้อง";
+      exerciseResult.classList.add("error");
+      exerciseResult.style.display = "block";
+      return;
+    }
+
+    const exName = exerciseSelect.value;
+    const ex = exercises.find(e => e.name === exName && e.part === bodyPartSelect.value);
+    const burned = Math.round(ex.burnPerMin * minutes);
+
+    exerciseResult.classList.remove("error");
+    exerciseResult.style.display = "block";
+    exerciseResult.innerHTML =
+      `🔥 ท่า <strong>${ex.name}</strong> ${minutes} นาที<br>
+       เผาผลาญประมาณ <strong>${burned} kcal</strong>`;
+
+    if (totalEatenCalories > 0) {
+      const ratio = (burned / totalEatenCalories * 100).toFixed(1);
+
+      compareSummary.style.display = "block";
+      compareSummary.innerHTML =
+        `<strong>เปรียบเทียบกับการกินในเกม</strong><br>
+         แคลอรี่ที่กิน: <strong>${totalEatenCalories} kcal</strong><br>
+         แคลอรี่ที่เผาได้: <strong>${burned} kcal</strong> (${ratio}%)<br><br>
+         ${
+           burned >= totalEatenCalories
+             ? "✅ เผาผลาญมากพอแล้ว ดีมาก!"
+             : "ℹ️ เผาผลาญยังไม่เท่าที่กิน ลองเพิ่มเวลาอีกหน่อยนะ"
+         }`;
+    }
   });
-  const btnCheck = document.createElement('button'); btnCheck.textContent='เช็กอินวันนี้'; btnCheck.style.marginTop='8px';
-  const histDiv = document.createElement('div'); histDiv.style.marginTop='10px';
-  area.appendChild(select); area.appendChild(btnCheck); area.appendChild(histDiv);
-  box.appendChild(area); gameContainer.appendChild(box);
 
-  // habit storage in state.habits
-  if(!state.habits) state.habits = {}; // {habitName: [dates]}
-  function renderHist(){
-    histDiv.innerHTML = '';
-    const h = select.value;
-    const dates = state.habits[h] || [];
-    if(dates.length===0) histDiv.innerHTML = '<div class="muted">ยังไม่มีการเช็กอิน</div>';
-    else{
-      const ul = document.createElement('ul'); ul.className='list';
-      dates.slice(-7).reverse().forEach(d=> {
-        const li = document.createElement('li'); li.innerHTML = `<div>${d}</div><div class="muted">✓</div>`; ul.appendChild(li);
-      });
-      histDiv.appendChild(ul);
+  /* -----------------------------------------------------
+      9) Calorie calculator logic (Mifflin–St Jeor)
+      - BMR (kcal/day)
+        ผู้ชาย: 10*weight + 6.25*height - 5*age + 5
+        ผู้หญิง:10*weight + 6.25*height - 5*age -161
+      - TDEE = BMR * activityFactor
+  ----------------------------------------------------- */
+  const calcSex = document.getElementById('calcSex');
+  const calcAge = document.getElementById('calcAge');
+  const calcWeight = document.getElementById('calcWeight');
+  const calcHeight = document.getElementById('calcHeight');
+  const calcActivity = document.getElementById('calcActivity');
+  const btnCalc = document.getElementById('btnCalc');
+  const btnUseTDEE = document.getElementById('btnUseTDEE');
+  const btnResetCalc = document.getElementById('btnResetCalc');
+  const calcOutput = document.getElementById('calcOutput');
+
+  function calcBMR(sex, age, weight, height){
+    // inputs: weight (kg), height (cm), age (years)
+    // returns BMR numeric
+    if(sex === 'male'){
+      return Math.round(10 * weight + 6.25 * height - 5 * age + 5);
+    } else {
+      return Math.round(10 * weight + 6.25 * height - 5 * age - 161);
     }
   }
-  renderHist();
 
-  btnCheck.addEventListener('click', ()=>{
-    const h = select.value;
-    const today = new Date().toISOString().slice(0,10);
-    state.habits[h] = state.habits[h] || [];
-    if(state.habits[h].includes(today)){ showToast('คุณเช็กอินวันนี้ไปแล้ว'); return; }
-    state.habits[h].push(today);
-    // reward: 5 coins per check-in, 10 points
-    state.coins += 5;
-    state.score += 10;
-    state.history.push({mode:'habit', score:10, details:{habit:h, date:today}, time:new Date().toISOString()});
-    state.playMinutes += 1;
-    checkBest();
-    saveState(); updateUI(); renderHist();
-    showToast(`เช็กอิน "${h}" เรียบร้อย ได้ 10 คะแนน + 5 ✦`);
+  function formatNumber(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+
+  btnCalc.addEventListener('click', ()=>{
+    const sex = calcSex.value;
+    const age = parseFloat(calcAge.value);
+    const weight = parseFloat(calcWeight.value);
+    const height = parseFloat(calcHeight.value);
+    const activity = parseFloat(calcActivity.value);
+
+    if(isNaN(age) || isNaN(weight) || isNaN(height) || age <= 0 || weight <= 0 || height <= 0){
+      calcOutput.style.display = 'block';
+      calcOutput.innerHTML = `<strong class="muted">กรุณากรอกข้อมูลน้ำหนัก ส่วนสูง และอายุให้ถูกต้อง</strong>`;
+      return;
+    }
+
+    // Warn for young children
+    if(age < 13){
+      calcOutput.style.display = 'block';
+      calcOutput.innerHTML = `<strong class="muted">หมายเหตุ:</strong> สูตรนี้เหมาะกับผู้ที่อายุ 13 ปีขึ้นไป. สำหรับเด็กเล็ก ควรใช้ตารางการให้พลังงานหรือปรึกษานักโภชนาการ.`;
+      return;
+    }
+
+    const bmr = calcBMR(sex, age, weight, height);
+    const tdee = Math.round(bmr * activity);
+
+    // Simple guidance for weight change (educational note)
+    const deficit500 = tdee - 500;
+    const surplus500 = tdee + 500;
+
+    calcOutput.style.display = 'block';
+    calcOutput.innerHTML =
+      `<div><strong>BMR (พื้นฐาน):</strong> ${formatNumber(bmr)} kcal/วัน</div>
+       <div style="margin-top:6px"><strong>TDEE (รวมกิจกรรม):</strong> ${formatNumber(tdee)} kcal/วัน</div>
+       <div style="margin-top:8px" class="muted">
+         คำอธิบาย: BMR คือพลังงานที่ร่างกายใช้ขณะพัก หากต้องการรวมการเคลื่อนไหว ให้คูณด้วยระดับกิจกรรม (Activity factor) เพื่อได้ TDEE.
+       </div>
+       <div style="margin-top:8px">
+         <strong>ตัวอย่างแนวทาง (โดยประมาณ):</strong>
+         <ul style="margin:6px 0 0 18px">
+           <li>หากต้องการ <em>ลดน้ำหนัก</em> อย่างปลอดภัย อาจตั้งเป้าลดพลังงาน ~500 kcal/วัน → ประมาณ ${formatNumber(deficit500)} kcal/วัน (ให้ปรึกษาผู้เชี่ยวชาญก่อน)</li>
+           <li>หากต้องการ <em>เพิ่มน้ำหนัก</em> อาจเพิ่มประมาณ 300–500 kcal/วัน → ตัวอย่าง ${formatNumber(surplus500)} kcal/วัน</li>
+         </ul>
+       </div>
+       <div style="margin-top:8px" class="muted"><strong>หมายเหตุสำคัญ:</strong> ข้อเสนอด้านการลด/เพิ่มน้ำหนักเป็นค่าประมาณและไม่เหมาะกับทุกคน — ปรึกษานักโภชนาการหรือแพทย์ก่อนนำไปใช้</div>`;
+
+    // store last calculated values in dataset for "use in game"
+    calcOutput.dataset.tdee = tdee;
+    calcOutput.dataset.bmr = bmr;
   });
 
-}
+  btnUseTDEE.addEventListener('click', ()=>{
+    // use the TDEE to compare with game totalEatenCalories if available
+    const tdee = parseInt(calcOutput.dataset.tdee);
+    if(!tdee){
+      calcOutput.style.display = 'block';
+      calcOutput.innerHTML = `<strong class="muted">กรุณาคำนวณ TDEE ก่อน (กด "คำนวณ BMR & TDEE")</strong>`;
+      return;
+    }
+    // show comparison UI: if already have totalEatenCalories from game, compare; else just show guidance
+    if(typeof totalEatenCalories !== 'undefined' && totalEatenCalories > 0){
+      const diff = tdee - totalEatenCalories;
+      const pct = ((totalEatenCalories / tdee) * 100).toFixed(1);
+      calcOutput.style.display = 'block';
+      calcOutput.innerHTML += `<div style="margin-top:10px"><strong>เปรียบเทียบกับแคลอรี่จากเกม:</strong><br>
+        แคลอรี่ที่กินจากเกม: <strong>${totalEatenCalories} kcal</strong><br>
+        พลังงานที่ต้องการ(โดยประมาณ): <strong>${formatNumber(tdee)} kcal/วัน</strong><br>
+        แคลอรี่ที่กินคิดเป็น: <strong>${pct}%</strong> ของ TDEE<br>
+        ${
+          totalEatenCalories <= tdee
+            ? '<div class="muted" style="margin-top:6px">ถ้าวันนี้กินเท่านี้ ยังอยู่ในขอบเขตพลังงานที่ประมาณได้</div>'
+            : '<div class="muted" style="margin-top:6px">วันนี้กินเกิน TDEE หากกินบ่อย อาจต้องพิจารณาปรับพฤติกรรมหรือปรึกษาผู้เชี่ยวชาญ</div>'
+        }
+      </div>`;
+    } else {
+      calcOutput.style.display = 'block';
+      calcOutput.innerHTML += `<div style="margin-top:10px" class="muted">ยังไม่ได้เล่นโหมดเกมอาหาร (หรือไม่มีแคลอรี่สะสม) — เล่นโหมดเกมทายแคลอรี่อาหารก่อนแล้วกลับมาดูเปรียบเทียบได้</div>`;
+    }
+  });
 
-/* ---------------------------
-   Leaderboard local
-----------------------------*/
-function updateLeader(){
-  const best = Number(localStorage.getItem('bestScore')||0);
-  if(state.score > best) localStorage.setItem('bestScore', state.score);
-  bestScoreEl.textContent = localStorage.getItem('bestScore')||0;
-  // simple top: store last results array
-  let top = JSON.parse(localStorage.getItem('topHist')||'[]');
-  top.push({score: state.score, time: new Date().toISOString()});
-  top = top.slice(-10);
-  localStorage.setItem('topHist', JSON.stringify(top));
-  leaderSummary.textContent = `รอบเล่น ${state.history.length} รอบ`;
-}
+  btnResetCalc.addEventListener('click', ()=>{
+    calcSex.value = 'male'; calcAge.value = 16; calcWeight.value = 55; calcHeight.value = 165; calcActivity.value = '1.55';
+    calcOutput.style.display = 'none';
+    delete calcOutput.dataset.tdee;
+    delete calcOutput.dataset.bmr;
+  });
 
-/* ---------------------------
-   Misc: Save, Reset, View Summary
-----------------------------*/
-btnSave.addEventListener('click', ()=>{ saveState(); });
-btnReset.addEventListener('click', ()=>{ resetState(); });
-
-btnViewSummary.addEventListener('click', ()=>{
-  const w = window.open('','_blank','width=900,height=700');
-  w.document.write(`<html><head><meta charset="utf-8"><title>สรุปผลการเล่น</title></head><body><h2>สรุปผล — ${state.name}</h2>`);
-  w.document.write(`<p>คะแนนรวม: ${state.score} | เหรียญ: ${state.coins} | Level: ${state.level} | เวลาที่เล่นโดยประมาณ: ${state.playMinutes} นาที</p>`);
-  if(state.history.length===0) w.document.write('<p>ยังไม่มีประวัติการเล่น</p>');
-  else{
-    w.document.write('<ol>');
-    state.history.slice().reverse().forEach(h=> w.document.write(`<li>${h.mode} — คะแนน ${h.score} — ${h.time}</li>`));
-    w.document.write('</ol>');
-  }
-  w.document.write('</body></html>'); w.document.close(); w.print();
-});
-
-/* ---------------------------
-   Utility: update best check
-----------------------------*/
-function checkBest(){
-  const best = Number(localStorage.getItem('bestScore')||0);
-  if(state.score > best){
-    localStorage.setItem('bestScore', state.score);
-    showToast('ใหม่! สถิติดีที่สุดบนเครื่องนี้ 🎉');
-  }
-}
-
-/* ---------------------------
-   Start
-----------------------------*/
-loadState();
-openTab('quiz'); // default
-updateLeader();
-
-/* optional: autosave every 20s */
-setInterval(()=>{ saveState(); },20000);
-
+  /* -----------------------------------------------------
+      init: keep original UI behaviors
+  ----------------------------------------------------- */
+  updateAgeInfo(); // age info for main UI
 </script>
+
 </body>
 </html>
