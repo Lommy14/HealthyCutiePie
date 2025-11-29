@@ -1,419 +1,319 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <title>เกมคำนวณแคลอรี่ & การออกกำลังกาย</title>
+  <meta charset="utf-8" />
+  <title>เครื่องมือสุขภาพ — คำนวณ BMI & อัตราการเต้นหัวใจตามช่วงอายุ</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; font-family: "Sarabun", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    body { margin: 0; padding: 0; background: #f3f6fb; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
-    .container { max-width: 1100px; width: 100%; margin: 24px; background: #ffffff; border-radius: 16px; padding: 24px 28px 32px; box-shadow: 0 12px 30px rgba(0,0,0,0.08); }
-    h1 { margin-top: 0; font-size: 26px; text-align:center; color:#1f3b70; }
-    h2 { font-size:20px; margin-bottom:8px; color:#1f3b70; }
-    p { margin:4px 0 8px; font-size:14px; color:#444; }
-    .flex { display:flex; gap:16px; flex-wrap:wrap; }
-    .card { background:#f9fbff; border-radius:12px; padding:16px 18px; flex:1 1 320px; min-width:260px; border:1px solid #e2e8f0; }
-    label { font-size:14px; font-weight:600; color:#1e293b; display:block; margin-bottom:6px; }
-    select, input[type="number"], input[type="text"] { width:100%; padding:8px 10px; border-radius:8px; border:1px solid #cbd5e1; font-size:14px; outline:none; }
-    select:focus, input:focus { border-color:#2563eb; box-shadow:0 0 0 2px rgba(37,99,235,0.18); }
-    button { border:none; border-radius:999px; padding:8px 16px; font-size:14px; cursor:pointer; background:#2563eb; color:#fff; font-weight:600; display:inline-flex; align-items:center; gap:6px; margin-top:8px; }
-    button.small { padding:6px 12px; font-size:13px; }
-    button.secondary { background:#64748b; }
-    .badge { display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; background:#e0edff; color:#1d4ed8; margin-right:4px; }
-    .age-info { font-size:13px; margin-top:6px; color:#475569; }
-    .tabs { display:flex; margin-top:16px; margin-bottom:8px; border-radius:999px; background:#e2e8f0; padding:4px; }
-    .tab { flex:1; text-align:center; padding:8px 10px; font-size:14px; cursor:pointer; border-radius:999px; transition:background .2s, color .2s; user-select:none; }
-    .tab.active { background:#fff; color:#1d4ed8; font-weight:600; box-shadow:0 1px 4px rgba(15,23,42,0.15); }
-    .tab-content { margin-top:12px; }
-    .question-box { margin-top:8px; padding:12px; border-radius:12px; background:#fff; border:1px solid #e2e8f0; }
-    .question-title { font-size:16px; font-weight:600; margin-bottom:6px; color:#0f172a; }
-    .question-sub { font-size:13px; color:#64748b; margin-bottom:8px; }
-    .status-row { display:flex; justify-content:space-between; font-size:13px; color:#475569; margin-top:8px; }
-    .result { margin-top:8px; padding:8px 10px; border-radius:8px; font-size:13px; background:#eff6ff; color:#1d4ed8; }
-    .result.error { background:#fef2f2; color:#b91c1c; }
-    .summary { margin-top:10px; padding:10px; border-radius:10px; background:#f1f5f9; font-size:13px; color:#0f172a; }
-    .pill-row { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
-    .pill { padding:4px 10px; border-radius:999px; font-size:12px; background:#e5e7eb; color:#374151; }
-    .hint { font-size:12px; color:#6b7280; margin-top:4px; }
-    .disclaimer { margin-top:16px; font-size:11px; color:#6b7280; border-top:1px dashed #cbd5e1; padding-top:8px; }
-
-    /* new: guidance styles */
-    .guide { background:#fff; border:1px solid #e6eefb; padding:12px; border-radius:10px; margin-bottom:12px; }
-    .guide h3 { margin:0 0 6px 0; color:#1f3b70; font-size:16px; }
-    .small-muted { font-size:13px; color:#6b7280; }
-    table.kcal { width:100%; border-collapse:collapse; margin-top:8px; }
-    table.kcal th, table.kcal td { border:1px solid #eef6ff; padding:8px; font-size:13px; text-align:left; }
-    @media (max-width:768px) { .flex { flex-direction:column; } .container { margin:12px; padding:18px; } }
+    :root{
+      --bg:#f3f6fb; --card:#ffffff; --accent:#1f3b70; --muted:#6b7280;
+    }
+    *{box-sizing:border-box;font-family:"Sarabun",system-ui,-apple-system,"Segoe UI",sans-serif}
+    body{margin:0;background:var(--bg);display:flex;justify-content:center;padding:28px 12px}
+    .container{max-width:1100px;width:100%;background:var(--card);border-radius:14px;padding:20px;box-shadow:0 12px 30px rgba(15,23,42,0.06)}
+    h1{margin:0;font-size:22px;color:var(--accent)}
+    p.lead{margin:6px 0 16px;color:var(--muted);font-size:14px}
+    .grid{display:grid;grid-template-columns:1fr 420px;gap:16px}
+    @media(max-width:980px){.grid{grid-template-columns:1fr}}
+    .card{background:#f9fbff;border-radius:10px;padding:14px;border:1px solid #e6eefb}
+    label{display:block;font-weight:700;margin-bottom:6px}
+    input,select,button{font-size:14px}
+    input,select{width:100%;padding:8px;border-radius:8px;border:1px solid #dbeafe}
+    button{background:linear-gradient(90deg,#2563eb,#06b6d4);color:#fff;border:0;padding:8px 12px;border-radius:999px;cursor:pointer;font-weight:700}
+    .small{padding:6px 10px;font-size:13px}
+    .secondary{background:#64748b}
+    .muted{color:var(--muted);font-size:13px}
+    .result{margin-top:10px;padding:12px;border-radius:8px;background:#eef6ff;border:1px solid #dbeafe}
+    .error{background:#fef2f2;border:1px solid #fee2e2;color:#b91c1c}
+    table{width:100%;border-collapse:collapse;margin-top:8px}
+    th,td{padding:8px;border:1px solid #eef6ff;text-align:left;font-size:13px}
+    .pill{display:inline-block;background:#eef2ff;color:#1d4ed8;padding:4px 8px;border-radius:999px;font-weight:700;margin-right:6px}
+    .hint{font-size:12px;color:#475569;margin-top:8px}
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🎮 เกมคำนวณแคลอรี่ & การออกกำลังกายในชีวิตประจำวัน</h1>
-    <p style="text-align:center;font-size:13px;color:#64748b;">
-      เลือกช่วงอายุ → เล่นเกมทายแคลอรี่อาหาร → ดูว่าจะเผาผลาญด้วยการออกกำลังกายส่วนไหนของร่างกายได้บ้าง
-    </p>
+    <h1>เครื่องมือสุขภาพ — BMI และอัตราการเต้นของหัวใจ (ตามช่วงอายุ)</h1>
+    <p class="lead">เลือกช่วงอายุเพื่อดูค่าประมาณของ Max HR และ Target Zones โดยอัตโนมัติ — หรือกรอกข้อมูลจริง (น้ำหนัก/ส่วนสูง/อายุ/Resting HR) เพื่อคำนวณแบบละเอียด (BMI และ Karvonen)</p>
 
-    <!-- NEW: Guidance block -->
-    <div class="guide">
-      <h3>แนวทางการคำนวณแคลอรี่อาหาร (สั้น กระชับ)</h3>
-      <div class="small-muted">
-        วิธีประเมินแคลอรี่ของอาหารมีหลักการสำคัญ 3 แบบ:
-        <ol style="margin:8px 0 0 18px; padding:0;">
-          <li><strong>จากมาโคร (macronutrients)</strong> — ถ้าทราบกรัมของโปรตีน/คาร์บ/ไขมัน ใช้ค่าพลังงานต่อกรัม: โปรตีน 4 kcal/g, คาร์โบไฮเดรต 4 kcal/g, ไขมัน 9 kcal/g</li>
-          <li><strong>จากฐานข้อมูลต่อ 100 g</strong> — หากรู้ค่า kcal ต่อ 100 g ให้คำนวณ: (น้ำหนักเป็นกรัม ÷ 100) × kcal/100g</li>
-          <li><strong>จากการรวมส่วนผสม</strong> — สำหรับเมนูที่มีหลายส่วน แยกคำนวณแต่ละส่วนแล้วรวม -> หารเป็น 1 หน่วย (เช่น 1 จาน)</li>
-        </ol>
+    <div class="grid">
+      <!-- LEFT: Calculators -->
+      <div>
+        <div class="card">
+          <h2>1) เลือกช่วงอายุ (ระบบจะเติมค่าตัวอย่างอายุให้)</h2>
+          <label>ช่วงอายุ</label>
+          <select id="ageGroup">
+            <option value="child">7–12 ปี (เด็ก)</option>
+            <option value="teen">13–18 ปี (วัยรุ่น)</option>
+            <option value="adult">19–59 ปี (ผู้ใหญ่)</option>
+            <option value="senior">60 ปีขึ้นไป (ผู้สูงอายุ)</option>
+          </select>
 
-        <div style="margin-top:8px;">
-          <strong>ตัวอย่างสั้น ๆ:</strong>
-          <ul style="margin:6px 0 0 18px;">
-            <li>อกไก่ 100 g ประมาณ 165 kcal → 200 g = 330 kcal</li>
-            <li>น้ำมัน 1 ช้อนโต๊ะ ≈ 14 g × 9 = 126 kcal</li>
-            <li>ข้าวสวย 1 ทัพพี (≈150 g) → 150/100 × 130 ≈ 195 kcal (ถ้าใช้ 130 kcal/100g)</li>
+          <div class="muted" style="margin-top:8px;">
+            เมื่อเลือกช่วงอายุ ระบบจะตั้งค่าอายุตัวอย่างที่ใช้คำนวณ Max HR & Target Zones ให้ (คุณสามารถแก้ไขอายุจริงได้ด้านล่าง)
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <h2>2) ข้อมูลผู้ใช้ (ใส่เพื่อคำนวณแบบแม่นยำ)</h2>
+          <label>อายุ (ปี)</label>
+          <input id="inputAge" type="number" min="5" value="30">
+
+          <label style="margin-top:8px;">น้ำหนัก (กก.)</label>
+          <input id="inputWeight" type="number" min="10" value="60">
+
+          <label style="margin-top:8px;">ส่วนสูง (ซม.)</label>
+          <input id="inputHeight" type="number" min="50" value="165">
+
+          <label style="margin-top:8px;">อัตราการเต้นหัวใจขณะพัก (Resting HR) — ถ้าทราบ</label>
+          <input id="inputRestHR" type="number" min="30" placeholder="เช่น 60">
+
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button id="btnCalcAll" class="small">คำนวณ BMI & HR</button>
+            <button id="btnReset" class="small secondary">รีเซ็ต</button>
+          </div>
+
+          <div id="calcResult" class="result" style="display:none;"></div>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <h2>3) สูตรที่ใช้</h2>
+          <ul class="muted">
+            <li><strong>BMI</strong> = น้ำหนัก (kg) ÷ (ส่วนสูง (m))²</li>
+            <li><strong>Max HR (สูตรมาตรฐาน)</strong> ≔ 220 − อายุ</li>
+            <li><strong>Max HR (Tanaka)</strong> ≔ 208 − 0.7 × อายุ (ทางเลือก)</li>
+            <li><strong>Target zone (ตาม % ของ Max HR)</strong> — เบา 50–60%, ปานกลาง 60–70%, หนัก 70–85%</li>
+            <li><strong>Karvonen (ถ้ามี Resting HR)</strong> — Target = ((MaxHR − RestHR) × intensity) + RestHR</li>
           </ul>
-        </div>
-
-        <div style="margin-top:10px;">
-          <strong>สรุปสั้น ๆ</strong>
-          <p class="small-muted">เพื่อความแม่นยำให้ชั่งน้ำหนักวัตถุดิบ (g) เมื่อทำได้ และคำนวณทีละส่วนก่อนรวมเป็นจาน</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Select age -->
-    <div class="card" style="margin-bottom:12px;">
-      <h2>1️⃣ เลือกช่วงอายุ</h2>
-      <label for="ageGroup">ช่วงอายุของผู้เล่น</label>
-      <select id="ageGroup">
-        <option value="teen">13–18 ปี (วัยรุ่น)</option>
-        <option value="adult">19–59 ปี (ผู้ใหญ่)</option>
-        <option value="child">7–12 ปี (เด็ก)</option>
-        <option value="senior">60 ปีขึ้นไป (ผู้สูงอายุ)</option>
-      </select>
-      <div id="ageInfo" class="age-info"></div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="tabs">
-      <div class="tab active" data-tab="food">โหมดที่ 1: เกมทายแคลอรี่อาหาร</div>
-      <div class="tab" data-tab="exercise">โหมดที่ 2: เกมเลือกการออกกำลังกาย</div>
-    </div>
-
-    <div class="tab-content">
-      <!-- FOOD TAB -->
-      <div id="tab-food">
-        <div class="flex">
-          <!-- Game food -->
-          <div class="card">
-            <h2>2️⃣ เกมทายแคลอรี่</h2>
-            <p>ระบบจะสุ่มอาหาร/เครื่องดื่มมาให้ 1 อย่าง ให้ลองเดาว่ามีแคลอรี่ประมาณเท่าไร</p>
-
-            <button id="btnNewQuestion">เริ่มคำถามใหม่ / เปลี่ยนเมนู</button>
-
-            <div id="foodQuestionBox" class="question-box" style="display:none;">
-              <div class="badge" id="foodIndexBadge">คำถามข้อ 1/5</div>
-              <div class="question-title" id="foodName">ชื่ออาหาร</div>
-              <div class="question-sub">ลองเดาแคลอรี่ (kcal)</div>
-
-              <label for="calInput">กรอกแคลอรี่ที่คุณเดา</label>
-              <input type="number" id="calInput" placeholder="เช่น 250" min="0">
-              <button id="btnCheckFood" class="small">ตรวจคำตอบ</button>
-
-              <div class="hint">จะถือว่าถูกถ้าเดาใกล้เคียง ±50 kcal</div>
-
-              <div id="foodResult" class="result" style="display:none;"></div>
-
-              <div class="status-row">
-                <span>คะแนน: <strong id="scoreText">0</strong></span>
-                <span>แคลอรี่สะสม: <strong id="totalEaten">0</strong> kcal</span>
-              </div>
-            </div>
-
-            <div id="foodSummary" class="summary" style="display:none;"></div>
-          </div>
-
-          <!-- Food preview + quick calculators -->
-          <div class="card">
-            <h2>🍚 ตัวอย่างเมนู & เครื่องมือคำนวณ</h2>
-            <p class="small-muted">รายการอาหารตัวอย่างในเกม (ค่าประมาณ)</p>
-            <div class="pill-row" id="foodListPreview"></div>
-
-            <hr style="border:none;border-top:1px solid #e6eefb;margin:12px 0">
-
-            <h3 style="margin:6px 0 8px 0;color:#1f3b70;font-size:16px;">เครื่องมือคำนวณ (เร็ว)</h3>
-            <!-- Macro calculator -->
-            <div style="margin-top:6px;">
-              <label>คำนวณจากมาโคร (g)</label>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <input id="macroProtein" type="number" placeholder="โปรตีน (g)" min="0" style="flex:1 1 100px;">
-                <input id="macroCarb" type="number" placeholder="คาร์บ (g)" min="0" style="flex:1 1 100px;">
-                <input id="macroFat" type="number" placeholder="ไขมัน (g)" min="0" style="flex:1 1 100px;">
-              </div>
-              <div style="display:flex;gap:8px;margin-top:8px;">
-                <button id="btnCalcMacro" class="small">คำนวณ</button>
-                <button id="btnClearMacro" class="small secondary">ล้าง</button>
-              </div>
-              <div id="macroResult" class="result" style="display:none;"></div>
-            </div>
-
-            <!-- Per-100g calculator -->
-            <div style="margin-top:12px;">
-              <label>คำนวณจากค่า (kcal / 100 g)</label>
-              <select id="foodSelect" style="margin-top:6px;">
-                <option value='{"name":"ข้าวสวย (ข้าวสุก)","k":130}'>ข้าวสวย — 130 kcal / 100 g</option>
-                <option value='{"name":"อกไก่ย่าง (ไม่มีหนัง)","k":165}'>อกไก่ย่าง — 165 kcal / 100 g</option>
-                <option value='{"name":"ไก่ทอด","k":300}'>ไก่ทอด — 300 kcal / 100 g</option>
-                <option value='{"name":"ชานมไข่มุก","k":60}'>ชานมไข่มุก — 60 kcal / 100 ml</option>
-                <option value='{"name":"โค้ก","k":42}'>โค้ก — 42 kcal / 100 ml</option>
-                <option value='{"name":"มันฝรั่งทอด (snack)","k":536}'>มันฝรั่งทอด — 536 kcal / 100 g</option>
-                <option value='{"name":"ส้มตำ (เฉลี่ย)","k":80}'>ส้มตำ — 80 kcal / 100 g</option>
-                <option value='{"name":"กล้วยหอม","k":89}'>กล้วยหอม — 89 kcal / 100 g</option>
-                <option value='{"name":"สลัดผัก (ไม่มีน้ำสลัด)","k":25}'>สลัดผัก — 25 kcal / 100 g</option>
-              </select>
-              <label style="margin-top:8px">น้ำหนัก (กรัม / ml)</label>
-              <input id="foodWeight" type="number" value="150" min="1">
-              <div style="display:flex;gap:8px;margin-top:8px;">
-                <button id="btnCalcFood" class="small">คำนวณ</button>
-                <button id="btnClearFood" class="small secondary">ล้าง</button>
-              </div>
-              <div id="foodResult" class="result" style="display:none;"></div>
-            </div>
-
-            <div class="hint">
-              เคล็ดลับ: เครื่องดื่มใช้ ml (1 ml ≈ 1 g สำหรับน้ำ/เครื่องดื่มใกล้เคียงน้ำ). สำหรับเมนูผสม ให้คำนวณแยกส่วนแล้วรวม
-            </div>
-          </div>
+          <div class="hint">คำเตือน: ค่า Max HR เป็นการประมาณ — หากต้องการค่าที่แม่นยำ ควรทดสอบภายใต้การดูแลของผู้เชี่ยวชาญ</div>
         </div>
       </div>
 
-      <!-- EXERCISE TAB -->
-      <div id="tab-exercise" style="display:none;">
-        <div class="flex">
-          <div class="card">
-            <h2>3️⃣ เลือกส่วนของร่างกาย</h2>
-
-            <label for="bodyPart">ส่วนของร่างกาย</label>
-            <select id="bodyPart">
-              <option value="legs">ขา / ระบบหัวใจ</option>
-              <option value="arms">แขน / ไหล่</option>
-              <option value="core">ลำตัว / หน้าท้อง</option>
-              <option value="full">ทั้งตัว</option>
-            </select>
-
-            <label for="exerciseSelect" style="margin-top:10px;">ท่าออกกำลังกาย</label>
-            <select id="exerciseSelect"></select>
-
-            <label for="minutesInput" style="margin-top:10px;">ระยะเวลา (นาที)</label>
-            <input type="number" id="minutesInput" value="30" min="5" step="5">
-
-            <button id="btnCalcBurn">คำนวณแคลอรี่ที่เผาผลาญ</button>
-
-            <div id="exerciseResult" class="result" style="display:none;"></div>
-            <div class="summary" id="compareSummary" style="display:none;"></div>
-          </div>
-
-          <div class="card">
-            <h2>🏃‍♀️ ตัวอย่างท่าออกกำลังกาย</h2>
-            <ul style="font-size:13px;color:#475569;padding-left:18px;">
-              <li>สควอท: ~6 kcal/นาที</li>
-              <li>วิดพื้น: ~7 kcal/นาที</li>
-              <li>Mountain Climber: ~8 kcal/นาที</li>
-              <li>Jumping Jack: ~8 kcal/นาที</li>
-              <li>Burpee: ~12 kcal/นาที</li>
-              <li>กระโดดเชือก: ~10 kcal/นาที</li>
-            </ul>
+      <!-- RIGHT: Results & Age-group summary -->
+      <aside>
+        <div class="card">
+          <h2>สรุปตามช่วงอายุ (ค่าประมาณ)</h2>
+          <div class="muted" id="ageSummary">
+            เลือกช่วงอายุด้านซ้ายเพื่อดูสรุป — ระบบจะคำนวณ Max HR และโซนตามอายุตัวอย่างของช่วงนั้น
           </div>
         </div>
-      </div>
 
-    </div>
-
-    <div class="disclaimer">
-      ⚠️ เกมนี้ใช้ค่าประมาณเพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำด้านโภชนาการจริง
+        <div class="card" style="margin-top:12px;">
+          <h2>ตารางอ้างอิงโซน HR (ตัวอย่าง)</h2>
+          <table>
+            <thead><tr><th>โซน</th><th>ความเข้มข้น (% ของ Max)</th><th>คำอธิบายสั้น</th></tr></thead>
+            <tbody>
+              <tr><td>โซนเบา</td><td>50–60%</td><td>กิจกรรมบำรุงสุขภาพ, เดินเร็ว</td></tr>
+              <tr><td>โซนปานกลาง</td><td>60–70%</td><td>เพิ่มความอดทน แนะนำสำหรับ cardio ปานกลาง</td></tr>
+              <tr><td>โซนหนัก</td><td>70–85%</td><td>เพิ่มความฟิตสูง เหมาะสำหรับ interval</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </aside>
     </div>
   </div>
 
 <script>
-  /* -------------------------
-      data: ageGroups, foods, exercises
-  ------------------------- */
-  const ageGroups = {
-    child: { label: "7–12 ปี (เด็ก)", recommend: "1,600–2,000 kcal/วัน" },
-    teen:  { label: "13–18 ปี (วัยรุ่น)", recommend: "2,000–2,400 kcal/วัน" },
-    adult: { label: "19–59 ปี (ผู้ใหญ่)", recommend: "1,800–2,400 kcal/วัน" },
-    senior:{ label: "60 ปีขึ้นไป (ผู้สูงอายุ)", recommend: "1,600–2,000 kcal/วัน" }
+  // Age group midpoints (ใช้เป็นค่าอายุตัวอย่างเมื่อเลือกช่วง)
+  const ageGroupMid = {
+    child: 10,   // 7-12 -> 10
+    teen: 16,    // 13-18 -> 16
+    adult: 39,   // 19-59 -> midpoint 39
+    senior: 70   // 60+ -> use 70 as example
   };
 
-  const foods = [
-    { name: "ข้าวมันไก่", calories: 600 },
-    { name: "ข้าวขาหมู", calories: 700 },
-    { name: "ข้าวผัดหมู", calories: 680 },
-    { name: "กะเพราไก่ + ไข่ดาว", calories: 650 },
-    { name: "ข้าวไข่เจียว", calories: 450 },
-    { name: "ก๋วยเตี๋ยวเรือ", calories: 320 },
-    { name: "ก๋วยเตี๋ยวผัดไทย", calories: 550 },
-    { name: "ส้มตำไทย", calories: 120 },
-    { name: "ส้มตำปูปลาร้า", calories: 80 },
-    { name: "ไก่ทอด 1 ชิ้น", calories: 350 },
-    { name: "หมูปิ้ง 1 ไม้", calories: 90 },
-    { name: "ลูกชิ้นปิ้ง 1 ไม้", calories: 70 },
-    { name: "ขนมครก 2 ชิ้น", calories: 200 },
-    { name: "บัวลอย", calories: 280 },
-    { name: "เฉาก๊วย", calories: 180 },
-    { name: "ไอศกรีม 1 ก้อน", calories: 140 },
-    { name: "เครปญี่ปุ่น", calories: 330 },
-    { name: "ชานมไข่มุก", calories: 300 },
-    { name: "ชาไทยเย็น", calories: 250 },
-    { name: "โอเลี้ยง", calories: 220 },
-    { name: "โค้กกระป๋อง", calories: 140 },
-    { name: "น้ำส้ม", calories: 110 },
-    { name: "ลาเต้หวานน้อย", calories: 150 },
-    { name: "นมจืด UHT", calories: 130 },
-    { name: "ป๊อบคอร์นหวาน", calories: 300 },
-    { name: "มันฝรั่งทอดซอง", calories: 500 },
-    { name: "ขนมปังไส้ช็อกโกแลต", calories: 270 },
-    { name: "เบอร์เกอร์หมู", calories: 550 },
-    { name: "ไก่ทอด KFC (น่อง)", calories: 280 },
-    { name: "กล้วยหอม 1 ผล", calories: 90 },
-    { name: "แตงโม 1 ชิ้น", calories: 30 },
-    { name: "ลำไย 10 เม็ด", calories: 60 },
-    { name: "ทุเรียน 1 เม็ด", calories: 130 },
-    { name: "มะม่วงสุก", calories: 135 },
-    { name: "สลัดผัก + น้ำสลัดงา", calories: 90 },
-    { name: "อกไก่ย่าง 100 กรัม", calories: 165 },
-    { name: "ไข่ต้ม 1 ฟอง", calories: 70 },
-    { name: "แซนวิชโฮลวีทไก่", calories: 240 }
-  ];
+  // UI refs
+  const ageGroup = document.getElementById('ageGroup');
+  const inputAge = document.getElementById('inputAge');
+  const inputWeight = document.getElementById('inputWeight');
+  const inputHeight = document.getElementById('inputHeight');
+  const inputRestHR = document.getElementById('inputRestHR');
+  const btnCalcAll = document.getElementById('btnCalcAll');
+  const btnReset = document.getElementById('btnReset');
+  const calcResult = document.getElementById('calcResult');
+  const ageSummary = document.getElementById('ageSummary');
 
-  const exercises = [
-    { part: "legs", name: "เดินเร็ว", burnPerMin: 4 },
-    { part: "legs", name: "วิ่งเหยาะ", burnPerMin: 8 },
-    { part: "legs", name: "อินเตอร์วัลรัน", burnPerMin: 9 },
-    { part: "legs", name: "สควอท", burnPerMin: 6 },
-    { part: "legs", name: "ลันจ์", burnPerMin: 6 },
-    { part: "legs", name: "เตะขาเข้าต้นขา", burnPerMin: 5 },
-    { part: "arms", name: "วิดพื้น", burnPerMin: 7 },
-    { part: "arms", name: "ดัมเบลเบาๆ", burnPerMin: 5 },
-    { part: "arms", name: "Lateral Raise", burnPerMin: 4 },
-    { part: "arms", name: "Wall Push-Up", burnPerMin: 4 },
-    { part: "arms", name: "Arm Circle", burnPerMin: 3 },
-    { part: "arms", name: "Triceps Dip", burnPerMin: 6 },
-    { part: "core", name: "ซิทอัพ", burnPerMin: 5 },
-    { part: "core", name: "แพลงก์", burnPerMin: 5 },
-    { part: "core", name: "ครันช์", burnPerMin: 4 },
-    { part: "core", name: "Russian Twist", burnPerMin: 6 },
-    { part: "core", name: "Mountain Climber", burnPerMin: 8 },
-    { part: "core", name: "Leg Raise", burnPerMin: 5 },
-    { part: "full", name: "ปั่นจักรยาน", burnPerMin: 7 },
-    { part: "full", name: "กระโดดเชือก", burnPerMin: 10 },
-    { part: "full", name: "Burpee", burnPerMin: 12 },
-    { part: "full", name: "Jumping Jack", burnPerMin: 8 },
-    { part: "full", name: "โยคะเบา ๆ", burnPerMin: 3 },
-    { part: "full", name: "เต้นแอโรบิก", burnPerMin: 7 },
-    { part: "full", name: "เต้น K-Pop", burnPerMin: 9 }
-  ];
-
-  /* -------------------------
-     UI refs
-  ------------------------- */
-  const ageGroupSelect = document.getElementById("ageGroup");
-  const ageInfoDiv = document.getElementById("ageInfo");
-  const foodListPreview = document.getElementById("foodListPreview");
-
-  const btnNewQuestion = document.getElementById("btnNewQuestion");
-  const foodQuestionBox = document.getElementById("foodQuestionBox");
-  const foodNameDiv = document.getElementById("foodName");
-  const foodIndexBadge = document.getElementById("foodIndexBadge");
-  const calInput = document.getElementById("calInput");
-  const btnCheckFood = document.getElementById("btnCheckFood");
-  const foodResult = document.getElementById("foodResult");
-  const scoreText = document.getElementById("scoreText");
-  const totalEaten = document.getElementById("totalEaten");
-  const foodSummary = document.getElementById("foodSummary");
-
-  const bodyPartSelect = document.getElementById("bodyPart");
-  const exerciseSelect = document.getElementById("exerciseSelect");
-  const minutesInput = document.getElementById("minutesInput");
-  const btnCalcBurn = document.getElementById("btnCalcBurn");
-  const exerciseResult = document.getElementById("exerciseResult");
-  const compareSummary = document.getElementById("compareSummary");
-
-  // calculators refs
-  const macroProtein = document.getElementById('macroProtein');
-  const macroCarb = document.getElementById('macroCarb');
-  const macroFat = document.getElementById('macroFat');
-  const btnCalcMacro = document.getElementById('btnCalcMacro');
-  const btnClearMacro = document.getElementById('btnClearMacro');
-  const macroResult = document.getElementById('macroResult');
-
-  const foodSelect = document.getElementById('foodSelect');
-  const foodWeight = document.getElementById('foodWeight');
-  const btnCalcFood = document.getElementById('btnCalcFood');
-  const btnClearFood = document.getElementById('btnClearFood');
-  const foodResultBox = document.getElementById('foodResult');
-
-  /* -------------------------
-     helpers & init
-  ------------------------- */
-  function updateAgeInfo(){
-    const key = ageGroupSelect.value;
-    const info = ageGroups[key];
-    ageInfoDiv.innerHTML = `<span class="badge">${info.label}</span> ต้องการพลังงานประมาณ <strong>${info.recommend}</strong>`;
-  }
-  updateAgeInfo();
-  ageGroupSelect.addEventListener('change', updateAgeInfo);
-
-  function renderFoodPreview(){
-    foodListPreview.innerHTML = '';
-    foods.forEach(f=>{
-      const pill = document.createElement('div');
-      pill.className = 'pill';
-      pill.textContent = `${f.name} ~ ${f.calories} kcal`;
-      foodListPreview.appendChild(pill);
+  // helpers
+  function round1(n){ return Math.round(n*10)/10; }
+  function showAgeSummaryFor(groupKey){
+    const sampleAge = ageGroupMid[groupKey];
+    const maxHR = 220 - sampleAge;
+    const tanaka = Math.round(208 - 0.7 * sampleAge);
+    const zones = [
+      {name:'โซนเบา (50–60%)', low:Math.round(0.5*maxHR), high:Math.round(0.6*maxHR)},
+      {name:'โซนปานกลาง (60–70%)', low:Math.round(0.6*maxHR), high:Math.round(0.7*maxHR)},
+      {name:'โซนหนัก (70–85%)', low:Math.round(0.7*maxHR), high:Math.round(0.85*maxHR)}
+    ];
+    let html = `<strong>ตัวอย่างอายุในช่วงนี้:</strong> ${sampleAge} ปี<br>`;
+    html += `<strong>Max HR (220 − อายุ):</strong> ${maxHR} bpm<br>`;
+    html += `<strong>Max HR (Tanaka):</strong> ${tanaka} bpm<br><br>`;
+    html += `<strong>Target zones (ตาม % ของ Max HR)</strong><br>`;
+    zones.forEach(z=>{
+      html += `${z.name}: ${z.low} – ${z.high} bpm<br>`;
     });
+    ageSummary.innerHTML = html;
   }
-  renderFoodPreview();
 
-  /* -------------------------
-     Tabs
-  ------------------------- */
-  const tabs = document.querySelectorAll('.tab');
-  const tabFood = document.getElementById('tab-food');
-  const tabExercise = document.getElementById('tab-exercise');
-  tabs.forEach(tab=>{
-    tab.addEventListener('click', ()=>{
-      tabs.forEach(t=>t.classList.remove('active'));
-      tab.classList.add('active');
-      if(tab.dataset.tab === 'food'){
-        tabFood.style.display = 'block';
-        tabExercise.style.display = 'none';
-      } else {
-        tabFood.style.display = 'none';
-        tabExercise.style.display = 'block';
-      }
-    });
+  // on load set summary
+  showAgeSummaryFor(ageGroup.value);
+
+  // when user selects age group, set age input to sample age and update summary
+  ageGroup.addEventListener('change', ()=>{
+    const key = ageGroup.value;
+    const sample = ageGroupMid[key];
+    inputAge.value = sample;
+    showAgeSummaryFor(key);
   });
 
-  /* -------------------------
-     Game food logic
-  ------------------------- */
-  let currentFood = null;
-  let questionIndex = 0;
-  const maxQuestions = 5;
-  let score = 0;
-  let totalEatenCalories = 0;
-  let gameFinished = false;
+  // calculation main
+  btnCalcAll.addEventListener('click', ()=>{
+    calcResult.style.display = 'block';
+    const age = parseFloat(inputAge.value);
+    const weight = parseFloat(inputWeight.value);
+    const heightCm = parseFloat(inputHeight.value);
+    const restHR = parseFloat(inputRestHR.value);
 
-  function newFoodQuestion(){
-    if(gameFinished){
-      questionIndex = 0; score = 0; totalEatenCalories = 0; gameFinished = false;
-      foodSummary.style.display = 'none';
-      scoreText.textContent = '0';
-      totalEaten.textContent = '0';
-    }
-    if(questionIndex >= maxQuestions){
-      showFoodSummary();
+    // validate basic
+    if(isNaN(age) || age <= 0){
+      calcResult.className = 'result error';
+      calcResult.innerHTML = 'กรุณากรอกอายุที่ถูกต้อง';
       return;
     }
-    const randomIndex = Math.floor(Math.random() * foods.length);
-    currentFood = foods[randomIndex];
+    if(isNaN(weight) || weight <= 0 || isNaN(heightCm) || heightCm <= 0){
+      calcResult.className = 'result error';
+      calcResult.innerHTML = 'กรุณากรอกน้ำหนักและส่วนสูงให้ถูกต้อง';
+      return;
+    }
+
+    // BMI
+    const heightM = heightCm / 100;
+    const bmi = weight / (heightM * heightM);
+    let bmiCat = '';
+    if(bmi < 18.5) bmiCat = 'น้ำหนักน้อย (Underweight)';
+    else if(bmi < 25) bmiCat = 'ปกติ (Normal weight)';
+    else if(bmi < 30) bmiCat = 'น้ำหนักเกิน (Overweight)';
+    else bmiCat = 'อ้วน (Obesity)';
+
+    // Max HR formulas
+    const maxHR_standard = Math.round(220 - age);
+    const maxHR_tanaka = Math.round(208 - 0.7 * age);
+
+    // target zones based on standard MaxHR
+    const zonesPerc = [
+      {name:'โซนเบา', lowP:0.50, highP:0.60},
+      {name:'โซนปานกลาง', lowP:0.60, highP:0.70},
+      {name:'โซนหนัก', lowP:0.70, highP:0.85}
+    ];
+    const zonesStandard = zonesPerc.map(z=>({
+      name: z.name,
+      low: Math.round(z.lowP * maxHR_standard),
+      high: Math.round(z.highP * maxHR_standard),
+      lowP: z.lowP, highP: z.highP
+    }));
+    const zonesTanaka = zonesPerc.map(z=>({
+      name: z.name,
+      low: Math.round(z.lowP * maxHR_tanaka),
+      high: Math.round(z.highP * maxHR_tanaka)
+    }));
+
+    // Karvonen if resting HR provided
+    let karvonenHtml = '';
+    if(!isNaN(restHR) && restHR > 20){
+      karvonenHtml += `<strong>Karvonen (ใช้ Resting HR = ${restHR} bpm)</strong><br>`;
+      zonesPerc.forEach(z=>{
+        const low = Math.round(((maxHR_standard - restHR) * z.lowP) + restHR);
+        const high = Math.round(((maxHR_standard - restHR) * z.highP) + restHR);
+        karvonenHtml += `${z.name} (${Math.round(z.lowP*100)}–${Math.round(z.highP*100)}%): ${low} – ${high} bpm<br>`;
+      });
+    } else {
+      karvonenHtml = `<div class="muted">หากทราบ Resting HR ให้กรอกเพื่อคำนวณ Karvonen (แม่นขึ้น)</div>`;
+    }
+
+    // Compose result HTML
+    let html = `<strong>BMI</strong>: ${round1(bmi)} kg/m² — <em>${bmiCat}</em><br><br>`;
+    html += `<strong>Max HR</strong> (สูตรมาตรฐาน 220−อายุ): <strong>${maxHR_standard} bpm</strong><br>`;
+    html += `<strong>Max HR</strong> (Tanaka 208 − 0.7×อายุ): <strong>${maxHR_tanaka} bpm</strong><br><br>`;
+
+    html += `<strong>Target zones (ตาม % ของ Max HR — สูตรมาตรฐาน)</strong><br>`;
+    zonesStandard.forEach(z=>{
+      html += `${z.name} (${Math.round(z.lowP*100 || 0)}–${Math.round(z.highP*100 || 0)}%): ${z.low} – ${z.high} bpm<br>`;
+    });
+
+    html += `<br><strong>Target zones (อ้างอิง Tanaka)</strong><br>`;
+    zonesTanaka.forEach(z=>{
+      html += `${z.name}: ${z.low} – ${z.high} bpm<br>`;
+    });
+
+    html += `<br>${karvonenHtml}`;
+
+    // Add quick tips based on age group
+    const groupKey = (() => {
+      if(age >= 60) return 'senior';
+      if(age >= 19) return 'adult';
+      if(age >= 13) return 'teen';
+      return 'child';
+    })();
+
+    const tipsByGroup = {
+      child: 'เด็กควรเน้นกิจกรรมหลากหลายและไม่ฝึกหนักเกินไป ต่อเนื่อง-เล่นกลางแจ้ง เพื่อพัฒนาความแข็งแรงและสมรรถภาพ',
+      teen: 'วัยรุ่นควรส่งเสริมกิจกรรมแอโรบิกปานกลางอย่างน้อย 60 นาทีต่อวัน ผสมกิจกรรมเสริมความแข็งแรง 3 ครั้ง/สัปดาห์',
+      adult: 'ผู้ใหญ่ควรพยายามออกกำลังกายแบบแอโรบิกปานกลาง 150 นาที/สัปดาห์ หรือหนัก 75 นาที/สัปดาห์ รวมการฝึกความแข็งแรง 2 ครั้ง/สัปดาห์',
+      senior: 'ผู้สูงอายุเน้นแอโรบิกเบา-ปานกลาง และฝึกการทรงตัว/ความแข็งแรงตามความสามารถ ปรึกษาแพทย์เมื่อต้องการเพิ่มความเข้มข้น'
+    };
+
+    html += `<hr style="border:none;border-top:1px solid #e6f0ff;margin:10px 0">`;
+    html += `<div class="muted"><strong>คำแนะนำสั้น ๆ:</strong> ${tipsByGroup[groupKey]}</div>`;
+
+    calcResult.className = 'result';
+    calcResult.innerHTML = html;
+  });
+
+  // reset
+  btnReset.addEventListener('click', ()=>{
+    // set to defaults and update summary
+    ageGroup.value = 'adult';
+    inputAge.value = 39;
+    inputWeight.value = 60;
+    inputHeight.value = 165;
+    inputRestHR.value = '';
+    showAgeSummaryFor('adult');
+    calcResult.style.display = 'none';
+  });
+
+  // init: set age based on initial group and summary
+  (function init(){
+    const g = ageGroup.value;
+    inputAge.value = ageGroupMid[g];
+    showAgeSummaryFor(g);
+  })();
+
+  // update when group changes (also sets sample age)
+  ageGroup.addEventListener('change', ()=>{
+    const g = ageGroup.value;
+    inputAge.value = ageGroupMid[g];
+    showAgeSummaryFor(g);
+  });
+
+  // helper function referenced earlier (must be declared before use)
+  function showAgeSummaryFor(groupKey){
+    const sampleAge = ageGroupMid[groupKey];
+    const maxHR = 220 - sampleAge;
+    const tanaka = Math.round(208 - 0.7 * sampleAge);
+    const zones = [
+      { name: 'โซนเบา (50–60%)', low: Math.round(0.5*maxHR), high: Math.round(0.6*maxHR) },
+      { name: 'โซนปานกลาง (60–70%)', low: Math.round(0.6*maxHR), high: Math.round(0.7*maxHR) },
+      { name: 'โซนหนัก (70–85%)', low: Math.round(0.7*maxHR), high: Math.round(0.85*maxHR) }
+    ];
+    let html = `<strong>ตัวอย่างอายุในช่วงนี้:</strong> ${sampleAge} ปี<br>`;
+    html += `<strong>Max HR (220 − อายุ):</strong> ${maxHR} bpm<br>`;
+    html += `<strong>Max HR (Tanaka):</strong> ${tanaka} bpm<br><br>`;
+    html += `<strong>Target zones (ตาม % ของ Max HR)</strong><br>`;
+    zones.forEach(z=>{
+      html += `${z.name}: ${z.low} – ${z.high} bpm<br>`;
+    });
+    ageSummary.innerHTML = html;
+  }
+</script>
+</body>
+</html>
