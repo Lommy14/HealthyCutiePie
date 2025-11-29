@@ -1,76 +1,72 @@
-Health-game-for-students (react)
-· typescript
-/*
-      <p className="text-sm text-gray-600">Tap to mark today's habits. Small daily wins build long-term health.</p>
-      <div className="mt-3 grid gap-2">
-        {HABITS.map((h, i) => (
-          <button key={i} onClick={() => toggleHabit(i)} className={`p-2 text-left rounded-md border ${today[i] ? "bg-green-50 border-green-400" : "border-gray-200"}`}>
-            <div className="flex justify-between">
-              <div>{h}</div>
-              <div className="text-sm text-gray-500">Streak: {getStreak(i)}</div>
-            </div>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
+Health-game-for-students
+· html
+<!--
+    /********************* HABIT TRACKER *********************/
+    const habitGrid = $('#habitGrid');
+    const todayKey = () => new Date().toISOString().slice(0,10);
+    function loadLogs(){ try{ return JSON.parse(localStorage.getItem('hg_logs')||'{}') }catch(e){ return {} } }
+    function saveLogs(l){ localStorage.setItem('hg_logs', JSON.stringify(l)) }
+    function getTodayRow(){ const logs = loadLogs(); return logs[todayKey()] || HABITS.map(()=>false) }
 
 
-// ---------- Main Game Wrapper ----------
-export default function HealthGameLauncher() {
-  const [score, setScore] = useState(0);
-  const [activeTab, setActiveTab] = useState("quiz");
+    function renderHabits(){ habitGrid.innerHTML = '';
+      const logs = loadLogs(); const today = getTodayRow();
+      HABITS.forEach((h,i)=>{
+        const b = document.createElement('button'); b.className='habit-btn'; b.textContent = h;
+        const streak = getStreak(i);
+        const s = document.createElement('div'); s.className='small'; s.style.marginTop='6px'; s.textContent = 'Streak: ' + streak;
+        const wrapper = document.createElement('div'); wrapper.appendChild(b); wrapper.appendChild(s);
+        if(today[i]) b.classList.add('active');
+        b.addEventListener('click', ()=>{
+          toggleToday(i); renderHabits();
+        });
+        habitGrid.appendChild(wrapper);
+      }) }
 
 
-  function handleScore(delta) {
-    setScore((s) => Math.max(0, s + delta));
-  }
+    function toggleToday(i){ const logs = loadLogs(); const key = todayKey(); const row = logs[key] ? [...logs[key]] : HABITS.map(()=>false); row[i] = !row[i]; logs[key] = row; saveLogs(logs); }
 
 
-  return (
-    <div className="min-h-screen p-6 bg-gradient-to-b from-sky-50 to-white">
-      <div className="max-w-3xl mx-auto">
-        <header className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold">Healthy Habits — Mini Games</h1>
-          <div className="text-right">
-            <div className="text-sm text-gray-500">Points</div>
-            <div className="text-xl font-semibold">{score}</div>
-          </div>
-        </header>
+    function getStreak(i){ const logs = loadLogs(); const dates = Object.keys(logs).sort().reverse(); let streak=0; for(const d of dates){ if(logs[d][i]) streak++; else break; if(streak>=365) break; } return streak }
 
 
-        <nav className="flex gap-2 mb-4">
-          <button onClick={() => setActiveTab("quiz")} className={`px-3 py-1 rounded ${activeTab === "quiz" ? "bg-indigo-600 text-white" : "border"}`}>Quiz</button>
-          <button onClick={() => setActiveTab("catch")} className={`px-3 py-1 rounded ${activeTab === "catch" ? "bg-indigo-600 text-white" : "border"}`}>Catch</button>
-          <button onClick={() => setActiveTab("habit")} className={`px-3 py-1 rounded ${activeTab === "habit" ? "bg-indigo-600 text-white" : "border"}`}>Habit</button>
-        </nav>
+    renderHabits();
 
 
-        <main>
-          {activeTab === "quiz" && <QuickQuiz onScore={handleScore} />}
-          {activeTab === "catch" && <CatchTheSnack onScore={handleScore} />}
-          {activeTab === "habit" && <HabitTracker />}
+    /********************* INITIAL UX TWEAKS *********************/
+    // make tabs interactive by id selection on load
+    function init(){
+      // expose ids for tab switching
+      document.getElementById('quiz').style.display='block';
+      document.getElementById('catch').style.display='none';
+      document.getElementById('habit').style.display='none';
+      // small helper: clicking nav buttons when dataset exists
+      $all('nav .tab').forEach(b=> b.addEventListener('click', ()=>{
+        const t = b.dataset.tab; switchTab(t);
+      }));
+    }
+    init();
 
 
-          <section className="mt-6 p-4 rounded-lg border bg-white">
-            <h4 className="font-semibold">Design notes for teachers / designers</h4>
-            <ul className="mt-2 list-disc ml-5 text-sm text-gray-700">
-              <li>Session length &lt; 5 minutes keeps attention — use these mini-modules between classes.</li>
-              <li>Give immediate feedback (quiz tips, score changes) to reinforce learning.</li>
-              <li>Use small rewards and public recognition (class leaderboard) to motivate — keep it positive and voluntary.</li>
-              <li>Pair gameplay with discussion: after a round, spend 2 minutes to reflect on what changed and make an action plan.</li>
-              <li>Use habit tracker for long-term behaviour: encourage students to log 1–2 achievable habits, then gradually add more.</li>
-              <li>Ensure privacy and safety: do not collect identifying data unless you have permission; prefer local storage or anonymous leaderboards.</li>
-            </ul>
-          </section>
-        </main>
+    // helper: ensure names don't collide with elements with ids
+    // (previously used in switchTab)
+    function switchTab(name){
+      $all('nav .tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
+      document.getElementById('quiz').style.display = name==='quiz' ? 'block' : 'none';
+      document.getElementById('catch').style.display = name==='catch' ? 'block' : 'none';
+      document.getElementById('habit').style.display = name==='habit' ? 'block' : 'none';
+    }
 
 
-        <footer className="mt-6 text-xs text-gray-500 text-center">
-          Built for schools — adapt questions and visuals for age group. Keyboard accessible (arrow keys) and mobile friendly.
-        </footer>
-      </div>
-    </div>
-  );
-}
+    // small accessibility: focus game area on clicking it
+    area.addEventListener('click', ()=> area.focus());
+
+
+    // update scoreEl live region
+    const scoreObserver = new MutationObserver(()=>{});
+    scoreObserver.observe(scoreEl, {childList:true});
+
+
+  </script>
+</body>
+</html>
