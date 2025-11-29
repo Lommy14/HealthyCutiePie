@@ -1,4 +1,3 @@
-
 const burned = Math.round(kcalPerMin * mins);
 STATE.burned += burned;
 addPoints(Math.round(burned/5));
